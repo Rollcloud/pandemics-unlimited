@@ -2,7 +2,23 @@ body {
     margin: 0;
 }
 
-canvas#map {
+#map-container {
     height: 100vh;
     width: 100vw;
+}
+
+#map-countries svg {
+    height: 100vh;
+    width: 100vw;
+}
+
+#map-countries path {
+    fill: #ddd;
+    stroke: #222;
+    stroke-width: 0.5;
+    transition: 0.8s;
+}
+#map-countries path:hover {
+    fill: rgb(33, 75, 33);
+    transition: 0.2s;
 }
