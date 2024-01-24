@@ -11,16 +11,32 @@ const seed_bacon = (countryCode, amount = 1) => {
   baconCounter[countryCode] += amount;
 };
 
-// for all countries if it, or any of its neighbours, has bacon, add 1 to the bacon counter
 const tick = () => {
-  Object.keys(baconCounter).forEach((countryCode) => {
-    if (borders[countryCode].length > 0) {
-      const neighbouringBacon = borders[countryCode].some(
-        (neighbourCountryCode) => baconCounter[neighbourCountryCode] > 0
-      );
-      if (neighbouringBacon) {
-        baconCounter[countryCode] += 1;
-      }
+  // in a dictionary, for each country code in list of country codes, set value to false
+  const countriesAddBacon = countryCodes.reduce((acc, countryCode) => {
+    acc[countryCode] = false;
+    return acc;
+  }, {});
+
+  // for each country in baconCounter, if it has bacon, add it to countriesWithBacon
+  const countriesWithBacon = countryCodes.filter(
+    (countryCode) => baconCounter[countryCode] > 0
+  );
+
+  // for all countries
+  //   for all of its neighbours
+  //     if a neighbour has bacon, set the country to add bacon
+  countriesWithBacon.forEach((countryCode) => {
+    const neighbours = borders[countryCode];
+    neighbours.forEach((neighbourCode) => {
+      countriesAddBacon[neighbourCode] = true;
+    });
+  });
+
+  // foreach country in countriesAddBacon, if it is true, add bacon to baconCounter
+  Object.keys(countriesAddBacon).forEach((countryCode) => {
+    if (countriesAddBacon[countryCode]) {
+      baconCounter[countryCode] += 1;
     }
   });
 
