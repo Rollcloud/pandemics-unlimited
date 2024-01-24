@@ -1,7 +1,7 @@
 #map-container {
   position: relative; /* this allows the child elements to be positioned absolutely */
 
-  height: 100vh;
+  height: 50vw;
   width: 100vw;
 }
 
@@ -10,14 +10,18 @@
   top: 0;
   left: 0;
 
-  height: 100vh;
+  height: 50vw;
   width: 100vw;
 }
 
 #map-countries {
+  overflow-x: hidden;
+
   svg {
-    height: 100vh;
+    height: 50vw;
     width: 100vw;
+
+    padding-left: 2.8vw; // the country map is not centered in the svg
   }
 
   .mapborder {
@@ -66,7 +70,7 @@
     margin-top: -5px;
   }
   .airport[data-continent="NA"] {
-    background-color: red;
+    background-color: green;
   }
   .airport[data-continent="SA"] {
     background-color: blue;
@@ -81,6 +85,6 @@
     background-color: purple;
   }
   .airport[data-continent="OC"] {
-    background-color: green;
+    background-color: brown;
   }
 }

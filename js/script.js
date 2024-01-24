@@ -71,8 +71,6 @@ const plotAirports = () => {
     airportDot.setAttribute("data-iata", airport.iata);
     airportDot.setAttribute("data-name", airport.name);
     airportDot.setAttribute("data-continent", airport.continent);
-    airportDot.setAttribute("data-lat", lat);
-    airportDot.setAttribute("data-lon", lon);
     airportDot.style.left = `${lonToX(lon)}%`;
     airportDot.style.top = `${latToY(lat)}%`;
     airportsLayer.appendChild(airportDot);
