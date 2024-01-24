@@ -1,4 +1,15 @@
 #map-container {
+  position: relative; /* this allows the child elements to be positioned absolutely */
+
+  height: 100vh;
+  width: 100vw;
+}
+
+.map-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+
   height: 100vh;
   width: 100vw;
 }
@@ -39,5 +50,37 @@
     .region[data-bacon="#{$i}"] {
       fill: rgb(255, 255-$i * 16, 255- $i * 16) !important;
     }
+  }
+}
+
+#map-airports {
+  .airport {
+    position: absolute;
+    // show div as a circle
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: green;
+    // center the div
+    margin-left: -5px;
+    margin-top: -5px;
+  }
+  .airport[data-continent="NA"] {
+    background-color: red;
+  }
+  .airport[data-continent="SA"] {
+    background-color: blue;
+  }
+  .airport[data-continent="EU"] {
+    background-color: yellow;
+  }
+  .airport[data-continent="AF"] {
+    background-color: orange;
+  }
+  .airport[data-continent="AS"] {
+    background-color: purple;
+  }
+  .airport[data-continent="OC"] {
+    background-color: green;
   }
 }

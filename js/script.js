@@ -1,5 +1,6 @@
 import { seed_bacon, tick } from "./models/bacon.js";
-import { countries, alpha3Codes, countryCodes } from "./models/countries.js";
+import { countries, alpha3Codes } from "./models/countries.js";
+import { airports } from "./models/airports.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
 
@@ -55,6 +56,30 @@ loadSvgInline("map-countries", worldMapUrl)
       });
     });
   });
+
+const lonToX = (lon) => (lon + 180) * (100 / 360);
+const latToY = (lat) => (90 - lat) * (100 / 180);
+
+// plot all airports at their lat/lon coordinates on the map
+const plotAirports = () => {
+  const airportsLayer = document.getElementById("map-airports");
+  airports.forEach((airport) => {
+    const lat = parseFloat(airport.lat);
+    const lon = parseFloat(airport.lon);
+    const airportDot = document.createElement("div");
+    airportDot.classList.add("airport");
+    airportDot.setAttribute("data-iata", airport.iata);
+    airportDot.setAttribute("data-name", airport.name);
+    airportDot.setAttribute("data-continent", airport.continent);
+    airportDot.setAttribute("data-lat", lat);
+    airportDot.setAttribute("data-lon", lon);
+    airportDot.style.left = `${lonToX(lon)}%`;
+    airportDot.style.top = `${latToY(lat)}%`;
+    airportsLayer.appendChild(airportDot);
+  });
+};
+
+plotAirports();
 
 // start the game
 const startGame = () => {
