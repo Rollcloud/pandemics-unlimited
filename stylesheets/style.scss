@@ -1,20 +1,43 @@
 #map-container {
-    height: 100vh;
-    width: 100vw;
+  height: 100vh;
+  width: 100vw;
 }
 
-#map-countries svg {
+#map-countries {
+  svg {
     height: 100vh;
     width: 100vw;
-}
+  }
 
-#map-countries path {
-    fill: #ddd;
+  .mapborder {
+    stroke: none;
+  }
+
+  .seabase {
+    fill: none;
+    stroke: none;
+  }
+
+  .region {
     stroke: #222;
-    stroke-width: 0.5;
-    transition: 0.8s;
-}
-#map-countries path:hover {
-    fill: rgb(33, 75, 33);
-    transition: 0.2s;
+    // stroke-width: 0.5;
+  }
+
+  .region:hover {
+    stroke: rgb(32, 95, 230);
+    stroke-width: 4;
+  }
+
+  $base-color: rgb(255, 0, 0);
+
+  // data bacon is not zero
+  .region[data-bacon]:not([data-bacon="0"]) {
+    fill: $base-color;
+  }
+
+  @for $i from 0 through 16 {
+    .region[data-bacon="#{$i}"] {
+      fill: rgb(255, 255-$i * 16, 255- $i * 16) !important;
+    }
+  }
 }
