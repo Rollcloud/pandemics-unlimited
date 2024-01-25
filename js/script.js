@@ -63,7 +63,7 @@ const inspect = (info) => {
   }
 
   if (category === "airport") {
-    inspectorIcon.classList = "airport-icon";
+    inspectorIcon.classList = `airport-${info.size}`;
     inspectorContent.innerHTML = `
     <ul>
       <li>IATA: ${identifier}</li>

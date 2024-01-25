@@ -23,3 +23,9 @@ https://github.com/jbrooksuk/JSON-Airports
 Flags:
 
 https://github.com/lipis/flag-icons
+
+Icons:
+
+Planes:
+
+Planes by Kokota from <a href="https://thenounproject.com/browse/icons/term/planes/" target="_blank" title="Planes Icons">Noun Project</a> (CC BY 3.0)

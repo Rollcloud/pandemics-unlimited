@@ -50,11 +50,6 @@ body {
       transition: 0.3s;
     }
 
-    .airport-icon {
-      // an airport icon as a data uri
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23fff' stroke-width='2'%3E%3Ccircle cx='32' cy='32' r='30'/%3E%3Ccircle cx='32' cy='32' r='10'/%3E%3C/g%3E%3C/svg%3E");
-    }
-
     #inspector-info {
       width: 100%;
       height: 100%;
