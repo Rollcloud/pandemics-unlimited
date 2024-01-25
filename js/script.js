@@ -4,6 +4,12 @@ import { airports } from "./models/airports.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
 
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
 // load svg file inline, returning promise
 const loadSvgInline = (elementId, imageUrl) => {
   const element = document.getElementById(elementId);
@@ -27,6 +33,46 @@ const extractCountryCode = (classes) => {
   return region2LetterCode;
 };
 
+// TODO: split out into UI module
+const dashboardInspector = document.getElementById("dashboard-inspector");
+const inspectorIcon = document.getElementById("inspector-icon");
+const inspectorTitle = document.getElementById("inspector-title");
+const inspectorContent = document.getElementById("inspector-content");
+
+const inspect = (info) => {
+  // info should be an object with at least the properties:
+  //   - category
+  //   - identifier
+  //   - name
+  // but may have additional properties
+
+  const category = info.category;
+  const identifier = info.identifier;
+  const name = info.name;
+
+  inspectorTitle.textContent = name;
+
+  if (category === "country") {
+    inspectorIcon.classList = `fi fi-${identifier.toLowerCase()} fis`;
+    inspectorContent.innerHTML = `
+    <ul>
+      <li>Code: ${identifier}</li>
+      <li>Bacon: ${info.bacon}</li>
+    </ul>
+    `;
+  }
+
+  if (category === "airport") {
+    inspectorIcon.classList = "airport-icon";
+    inspectorContent.innerHTML = `
+    <ul>
+      <li>IATA: ${identifier}</li>
+      <li>Size: ${toTitleCase(info.size)}</li>
+    </ul>
+    `;
+  }
+};
+
 loadSvgInline("map-countries", worldMapUrl)
   .then(() => {
     // add 2-letter country class to each region
@@ -39,10 +85,6 @@ loadSvgInline("map-countries", worldMapUrl)
   })
   .then(() => {
     // when hovering over a country, show the country name, code, id, class and data-bacon
-    const countryInfo = document.createElement("div");
-    countryInfo.classList.add("country-info");
-    // add countryInfo to top of page
-    document.body.prepend(countryInfo);
 
     const regions = document.querySelectorAll("#map-countries .region");
     regions.forEach((region) => {
@@ -51,8 +93,13 @@ loadSvgInline("map-countries", worldMapUrl)
         const code = extractCountryCode(classes);
         const name = countries[code];
         const bacon = event.target.getAttribute("data-bacon");
-        const countryInfo = document.querySelector(".country-info");
-        countryInfo.innerHTML = `[${code}] ${name} ${bacon} bacon`;
+
+        inspect({
+          category: "country",
+          identifier: code,
+          name: name,
+          bacon: bacon,
+        });
       });
     });
   });
@@ -69,11 +116,23 @@ const plotAirports = () => {
     const airportDot = document.createElement("div");
     airportDot.classList.add("airport");
     airportDot.setAttribute("data-iata", airport.iata);
-    airportDot.setAttribute("data-name", airport.name);
     airportDot.setAttribute("data-continent", airport.continent);
+    airportDot.setAttribute("data-size", airport.size);
     airportDot.style.left = `${lonToX(lon)}%`;
     airportDot.style.top = `${latToY(lat)}%`;
     airportsLayer.appendChild(airportDot);
+
+    airportDot.addEventListener("mouseover", (event) => {
+      // const iata = event.target.getAttribute("data-iata");
+      // const name = event.target.getAttribute("data-name");
+
+      inspect({
+        category: "airport",
+        identifier: airport.iata,
+        name: airport.name,
+        size: airport.size,
+      });
+    });
   });
 };
 

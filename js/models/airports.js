@@ -35,10 +35,16 @@ const get_airports = () => {
 
   const airports = continents.reduce((acc, continent) => {
     const largeAirports = all_airports.filter(
-      (airport) => airport.continent === continent && airport.size === "large"
+      (airport) =>
+        airport.status == 1 &&
+        airport.continent === continent &&
+        airport.size === "large"
     );
     const mediumAirports = all_airports.filter(
-      (airport) => airport.continent === continent && airport.size === "medium"
+      (airport) =>
+        airport.status == 1 &&
+        airport.continent === continent &&
+        airport.size === "medium"
     );
     const largeAirportCount = largeAirports.length;
     const mediumAirportCount = mediumAirports.length;

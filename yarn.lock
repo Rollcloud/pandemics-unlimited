@@ -1077,6 +1077,11 @@ find-up@^4.0.0:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
 
+flag-icons@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/flag-icons/-/flag-icons-7.1.0.tgz#6898ae3b3a57e5a363e12478c1ef384aa62d641f"
+  integrity sha512-AH4v++19bpC5P3Wh767top4wylJYJCWkFnvNiDqGHDxqSqdMZ49jpLXp8PWBHTTXaNQ+/A+QPrOwyiIGaiIhmw==
+
 flat@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/flat/-/flat-5.0.2.tgz#8ca6fe332069ffa9d324c327198c598259ceb241"

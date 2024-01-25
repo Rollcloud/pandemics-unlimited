@@ -1,3 +1,8 @@
+body {
+  font-family: "Roboto", sans-serif;
+  font-size: 12px;
+}
+
 #map-container {
   position: relative; /* this allows the child elements to be positioned absolutely */
 
@@ -12,6 +17,13 @@
 
   height: 50vw;
   width: 100vw;
+
+  pointer-events: none;
+}
+
+// allow all children of .map-layer listen to pointer events
+.map-layer > * {
+  pointer-events: auto;
 }
 
 #map-countries {
@@ -86,5 +98,71 @@
   }
   .airport[data-continent="OC"] {
     background-color: brown;
+  }
+}
+
+#dashboard {
+  // stick to the bottom of the screen with fixed height
+  position: fixed;
+  bottom: 0;
+  height: 20vh;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+
+  font-size: 2em;
+  z-index: 100;
+
+  #dashboard-inspector {
+    // centre dashboard window
+    width: 40%;
+    height: 100%;
+
+    display: flex;
+
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: 10px solid #111;
+
+    #inspector-icon {
+      flex: 0 0 auto; // don't let the icon grow or shrink
+      width: 128px;
+      height: 128px;
+      background-color: rgba(0, 0, 0, 0.8);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+
+      transition: 0.2s;
+    }
+
+    .airport-icon {
+      // an airport icon as a data uri
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23fff' stroke-width='2'%3E%3Ccircle cx='32' cy='32' r='30'/%3E%3Ccircle cx='32' cy='32' r='10'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    #inspector-info {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding-left: 10px;
+      padding-right: 10px;
+
+      #inspector-title {
+        font-weight: bold;
+      }
+
+      #inspector-content {
+        font-size: 0.6em;
+      }
+    }
+
+    ul {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
   }
 }
