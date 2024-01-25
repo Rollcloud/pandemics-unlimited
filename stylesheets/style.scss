@@ -1,130 +1,42 @@
+@use "colours";
+
+// Import Cirrus base
+// https://www.cirrus-ui.com/getting-started/configuration
+@use "cirrus-ui/src/cirrus-ext" as * with (
+  $config: (
+    extend: (),
+  )
+);
+
 body {
-  font-family: "Roboto", sans-serif;
-  font-size: 12px;
-}
-
-#map-container {
-  position: relative; /* this allows the child elements to be positioned absolutely */
-
-  height: 50vw;
-  width: 100vw;
-}
-
-.map-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  height: 50vw;
-  width: 100vw;
-
-  pointer-events: none;
-}
-
-// allow all children of .map-layer listen to pointer events
-.map-layer > * {
-  pointer-events: auto;
-}
-
-#map-countries {
-  overflow-x: hidden;
-
-  svg {
-    height: 50vw;
-    width: 100vw;
-
-    padding-left: 2.8vw; // the country map is not centered in the svg
-  }
-
-  .mapborder {
-    stroke: none;
-  }
-
-  .seabase {
-    fill: none;
-    stroke: none;
-  }
-
-  .region {
-    stroke: #222;
-    // stroke-width: 0.5;
-  }
-
-  .region:hover {
-    stroke: rgb(32, 95, 230);
-    stroke-width: 4;
-  }
-
-  $base-color: rgb(255, 0, 0);
-
-  // data bacon is not zero
-  .region[data-bacon]:not([data-bacon="0"]) {
-    fill: $base-color;
-  }
-
-  @for $i from 0 through 16 {
-    .region[data-bacon="#{$i}"] {
-      fill: rgb(255, 255-$i * 16, 255- $i * 16) !important;
-    }
-  }
-}
-
-#map-airports {
-  .airport {
-    position: absolute;
-    // show div as a circle
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: green;
-    // center the div
-    margin-left: -5px;
-    margin-top: -5px;
-  }
-  .airport[data-continent="NA"] {
-    background-color: green;
-  }
-  .airport[data-continent="SA"] {
-    background-color: blue;
-  }
-  .airport[data-continent="EU"] {
-    background-color: yellow;
-  }
-  .airport[data-continent="AF"] {
-    background-color: orange;
-  }
-  .airport[data-continent="AS"] {
-    background-color: purple;
-  }
-  .airport[data-continent="OC"] {
-    background-color: brown;
-  }
+  background-color: #222;
+  color: #ddd;
 }
 
 #dashboard {
+  @extend .gradient-1;
   // stick to the bottom of the screen with fixed height
   position: fixed;
   bottom: 0;
-  height: 20vh;
   width: 100vw;
   display: flex;
   justify-content: space-between;
 
-  font-size: 2em;
   z-index: 100;
+
+  .dashboard-card {
+    padding: 1rem;
+  }
 
   #dashboard-inspector {
     // centre dashboard window
-    width: 40%;
+    width: 45%;
     height: 100%;
 
     display: flex;
 
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border: 10px solid #111;
 
     #inspector-icon {
       flex: 0 0 auto; // don't let the icon grow or shrink
@@ -135,7 +47,7 @@ body {
       background-repeat: no-repeat;
       background-position: center;
 
-      transition: 0.2s;
+      transition: 0.3s;
     }
 
     .airport-icon {
@@ -152,11 +64,13 @@ body {
       padding-right: 10px;
 
       #inspector-title {
-        font-weight: bold;
+        @extend .mb-0;
       }
 
       #inspector-content {
-        font-size: 0.6em;
+        li {
+          @extend .m-0;
+        }
       }
     }
 
