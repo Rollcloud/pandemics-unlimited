@@ -1,3 +1,6 @@
+@use "cirrus-ui/src/cirrus-ext" as *; // Core build
+@use "icons";
+
 #map-container {
   position: relative; /* this allows the child elements to be positioned absolutely */
 
@@ -66,32 +69,30 @@
 
 #map-airports {
   .airport {
+    @extend .airport-icon;
     position: absolute;
-    // show div as a circle
-    width: 10px;
-    height: 10px;
+
+    background-color: #222;
     border-radius: 50%;
-    background-color: green;
-    // center the div
-    margin-left: -5px;
-    margin-top: -5px;
+    border: solid 2px #ddd;
+
+    width: 1em;
+    height: 1em;
+    margin-left: -0.5em;
+    margin-top: -0.5em;
   }
-  .airport[data-continent="NA"] {
-    background-color: green;
+
+  .airport[data-size="large"] {
+    font-size: 1.2em;
   }
-  .airport[data-continent="SA"] {
-    background-color: blue;
+  .airport:hover {
+    @extend .u-z-40;
+    font-size: 1.6em;
   }
-  .airport[data-continent="EU"] {
-    background-color: yellow;
+  .airport[data-size="large"]:hover {
+    @extend .airport, :hover;
+    font-size: 2em;
   }
-  .airport[data-continent="AF"] {
-    background-color: orange;
-  }
-  .airport[data-continent="AS"] {
-    background-color: purple;
-  }
-  .airport[data-continent="OC"] {
-    background-color: brown;
+}
   }
 }

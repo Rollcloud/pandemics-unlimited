@@ -29,3 +29,7 @@ Icons:
 Planes:
 
 Planes by Kokota from <a href="https://thenounproject.com/browse/icons/term/planes/" target="_blank" title="Planes Icons">Noun Project</a> (CC BY 3.0)
+
+Aircraft:
+
+aircraft by Alice Design from <a href="https://thenounproject.com/browse/icons/term/aircraft/" target="_blank" title="aircraft Icons">Noun Project</a> (CC BY 3.0)
