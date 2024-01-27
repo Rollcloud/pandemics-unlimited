@@ -1,5 +1,5 @@
 import { seed_bacon, tick } from "./models/bacon.js";
-import { countries, alpha3Codes } from "./models/countries.js";
+import { countries, alpha3Codes, getPopulation } from "./models/countries.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
 
@@ -54,10 +54,12 @@ const inspect = (info) => {
   inspectorTitle.textContent = name;
 
   if (category === "country") {
+    const population = getPopulation(identifier);
     inspectorIcon.classList = `fi fi-${identifier.toLowerCase()} fis`;
     inspectorContent.innerHTML = `
     <ul>
       <li>Code: ${identifier}</li>
+      <li>Population: ${population.toLocaleString()}</li>
       <li>Bacon: ${info.bacon}</li>
     </ul>
     `;
