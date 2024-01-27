@@ -1,4 +1,4 @@
-# Pandemics Incorporated
+# Pandemics Unlimited
 
 ## Attributions
 
