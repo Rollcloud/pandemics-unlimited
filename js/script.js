@@ -222,7 +222,7 @@ const simulateJourneys = () => {
 
 // start the game
 const startGame = () => {
-  setInterval(spreadSimulation, 1000);
+  setInterval(spreadSimulation, 30);
   setInterval(simulateJourneys, 30);
 };
 
