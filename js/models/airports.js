@@ -34,11 +34,18 @@ const get_airports = () => {
   const numberMediumAirports = 5;
 
   // filter all_airports to remove airports with status 0
-  all_airports.filter((airport) => airport.status == 1);
+  all_airports = all_airports.filter((airport) => airport.status == 1);
+  // filter all_airports to remove airports without a name
+  all_airports = all_airports.filter(
+    (airport) =>
+      airport.name !== "" && airport.name !== null && airport.name !== undefined
+  );
   // filter all_airports to remove airports with invalid lat or lon
-  all_airports.filter((airport) => !isNaN(airport.lat) || !isNaN(airport.lon));
+  all_airports = all_airports.filter(
+    (airport) => !isNaN(airport.lat) || !isNaN(airport.lon)
+  );
   // filter all_airports to remove airports without an iso code
-  all_airports.filter(
+  all_airports = all_airports.filter(
     (airport) =>
       airport.iso !== "" && airport.iso !== null && airport.iso !== undefined
   );

@@ -66,9 +66,11 @@ const inspect = (info) => {
   }
 
   if (category === "airport") {
+    const country = countries[info.countryCode];
     inspectorIcon.classList = `airport-${info.size}`;
     inspectorContent.innerHTML = `
     <ul>
+      <li><span class="fi fi-${info.countryCode.toLowerCase()}" ></span> ${country}</li>
       <li>IATA: ${identifier}</li>
       <li>Size: ${toTitleCase(info.size)}</li>
     </ul>
@@ -134,6 +136,7 @@ const plotAirports = () => {
         identifier: airport.iata,
         name: airport.name,
         size: airport.size,
+        countryCode: airport.iso,
       });
     });
   });
