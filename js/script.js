@@ -114,16 +114,16 @@ const plotAirports = () => {
   airports.forEach((airport) => {
     const lat = parseFloat(airport.lat);
     const lon = parseFloat(airport.lon);
-    const airportDot = document.createElement("div");
-    airportDot.classList.add("airport");
-    airportDot.setAttribute("data-iata", airport.iata);
-    airportDot.setAttribute("data-continent", airport.continent);
-    airportDot.setAttribute("data-size", airport.size);
-    airportDot.style.left = `${lonToX(lon)}%`;
-    airportDot.style.top = `${latToY(lat)}%`;
-    airportsLayer.appendChild(airportDot);
+    const airportMarker = document.createElement("div");
+    airportMarker.classList.add("airport");
+    airportMarker.setAttribute("data-iata", airport.iata);
+    airportMarker.setAttribute("data-continent", airport.continent);
+    airportMarker.setAttribute("data-size", airport.size);
+    airportMarker.style.left = `${lonToX(lon)}%`;
+    airportMarker.style.top = `${latToY(lat)}%`;
+    airportsLayer.appendChild(airportMarker);
 
-    airportDot.addEventListener("mouseover", (event) => {
+    airportMarker.addEventListener("mouseover", (event) => {
       // const iata = event.target.getAttribute("data-iata");
       // const name = event.target.getAttribute("data-name");
 
@@ -155,7 +155,7 @@ const renderVehicle = (marker, vehicle) => {
   marker.style.left = `${lonToX(vehicle.position.lon)}%`;
   marker.style.top = `${latToY(vehicle.position.lat)}%`;
   marker.style.transform = `rotate(${vehicle.bearing}deg)`;
-  if (vehicle.altitude) {
+  if (Object.hasOwn(vehicle, "altitude")) {
     marker.style.fontSize = `${Math.floor(vehicle.altitude / 1.5) + 5}px`;
   }
 };

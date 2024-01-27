@@ -1,12 +1,6 @@
 const RADIUS_EARTH = 6371; // km
 
 // create path object from lat/lon coordinates 1 to lat/lon coordinates 2
-// const path = createPath(
-//     parseFloat(airport1.lat),
-//     parseFloat(airport1.lon),
-//     parseFloat(airport2.lat),
-//     parseFloat(airport2.lon)
-// );
 // returns the start and end lat/lon coordinates, using Great Circle formulae, returns the distance in kilometres between them and the appropriate bearing in degrees
 const createPath = (startCoordinates, endCoordinates) => {
   const lat1 = startCoordinates.lat;
@@ -127,10 +121,6 @@ const createJourney = (start, end, speed) => {
     path,
     tick() {
       const newVehicle = moveVehicle(vehicle, path, speed);
-      //   const newVehicle = {
-      //     position: { lat: 0, lon: 0 },
-      //     distanceTravelled: 0,
-      //   };
       vehicle.bearing = calcAngleDegrees(vehicle.position, newVehicle.position);
       vehicle.position = newVehicle.position;
       vehicle.distanceTravelled = newVehicle.distanceTravelled;
