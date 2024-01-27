@@ -1,0 +1,14 @@
+// Import Cirrus base
+// https://www.cirrus-ui.com/getting-started/configuration
+@use "cirrus-ui/src/cirrus-ext" as * with (
+  $config: (
+    extend: (
+      colors: (
+        semantic: (
+          "light": #ddd,
+          "dark": #222,
+        ),
+      ),
+    ),
+  )
+);
