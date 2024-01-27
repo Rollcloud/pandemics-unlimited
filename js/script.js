@@ -1,4 +1,3 @@
-import { seed_bacon, tick } from "./models/bacon.js";
 import {
   countries,
   alpha3Codes,
@@ -7,6 +6,8 @@ import {
 } from "./models/countries.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
+import { seed_bacon, tick } from "./models/bacon.js";
+import { tick as tickSmiles } from "./models/smiles.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
 
@@ -66,6 +67,7 @@ const inspect = (info) => {
       <li>Code: ${identifier}</li>
       <li>Population: ${population.toLocaleString()}</li>
       <li>Bacon: ${info.bacon}🥓</li>
+      <li>Smiles: ${(info.smiles || 0).toLocaleString()}😊</li>
     </ul>
     `;
   }
@@ -110,12 +112,14 @@ loadSvgInline("map-countries", worldMapUrl)
           const code = extractCountryCode(classes);
           const name = countries[code];
           const bacon = baconCounter[code];
+          const smileCount = smiles[code];
 
           inspect({
             category: "country",
             identifier: code,
             name: name,
             bacon: bacon,
+            smiles: smileCount,
           });
         });
       });
@@ -176,6 +180,26 @@ const simulateBacon = () => {
     const regions = countriesDOM[countryCode];
     regions.forEach((region) => {
       region.setAttribute("data-bacon", percentage);
+    });
+  });
+};
+
+let smiles = {};
+const simulateSmiles = () => {
+  smiles = tickSmiles(); // update simulation
+
+  // update smile counter on map
+  const smilePercentage = Object.keys(smiles).reduce((acc, countryCode) => {
+    const population = getPopulation(countryCode);
+    const smile = smiles[countryCode];
+    acc[countryCode] = Math.floor((smile / population) * 100) || 0;
+    return acc;
+  }, {});
+  Object.keys(smilePercentage).forEach((countryCode) => {
+    const percentage = smilePercentage[countryCode];
+    const regions = countriesDOM[countryCode];
+    regions.forEach((region) => {
+      region.setAttribute("data-smile", percentage);
     });
   });
 };
@@ -248,6 +272,7 @@ const simulateJourneys = () => {
 const startGame = () => {
   setInterval(simulateBacon, 30);
   setInterval(simulateJourneys, 30);
+  setInterval(simulateSmiles, 10);
 };
 
 startGame();
