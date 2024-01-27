@@ -9,6 +9,7 @@ const baconCounter = countryCodes.reduce((acc, countryCode) => {
 // place bacon in the given country
 const seed_bacon = (countryCode, amount = 1) => {
   baconCounter[countryCode] += amount;
+  return baconCounter;
 };
 
 const tick = () => {

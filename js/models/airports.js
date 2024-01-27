@@ -33,18 +33,22 @@ const get_airports = () => {
   const numberLargeAirports = 5;
   const numberMediumAirports = 5;
 
+  // filter all_airports to remove airports with status 0
+  all_airports.filter((airport) => airport.status == 1);
+  // filter all_airports to remove airports with invalid lat or lon
+  all_airports.filter((airport) => !isNaN(airport.lat) || !isNaN(airport.lon));
+  // filter all_airports to remove airports without an iso code
+  all_airports.filter(
+    (airport) =>
+      airport.iso !== "" && airport.iso !== null && airport.iso !== undefined
+  );
+
   const airports = continents.reduce((acc, continent) => {
     const largeAirports = all_airports.filter(
-      (airport) =>
-        airport.status == 1 &&
-        airport.continent === continent &&
-        airport.size === "large"
+      (airport) => airport.continent === continent && airport.size === "large"
     );
     const mediumAirports = all_airports.filter(
-      (airport) =>
-        airport.status == 1 &&
-        airport.continent === continent &&
-        airport.size === "medium"
+      (airport) => airport.continent === continent && airport.size === "medium"
     );
     const largeAirportCount = largeAirports.length;
     const mediumAirportCount = mediumAirports.length;

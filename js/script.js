@@ -1,6 +1,7 @@
 import { seed_bacon, tick } from "./models/bacon.js";
 import { countries, alpha3Codes } from "./models/countries.js";
 import { airports } from "./models/airports.js";
+import { createJourney } from "./models/paths.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
 
@@ -104,8 +105,8 @@ loadSvgInline("map-countries", worldMapUrl)
     });
   });
 
-const lonToX = (lon) => (lon + 180) * (100 / 360);
-const latToY = (lat) => (90 - lat) * (100 / 180);
+const lonToX = (lon) => ((lon + 180) * (100 / 360)) % 100;
+const latToY = (lat) => ((90 - lat) * (100 / 180)) % 100;
 
 // plot all airports at their lat/lon coordinates on the map
 const plotAirports = () => {
@@ -136,25 +137,88 @@ const plotAirports = () => {
   });
 };
 
+let baconCounter = seed_bacon("ZA");
 plotAirports();
+
+const spreadSimulation = () => {
+  baconCounter = tick();
+  Object.keys(baconCounter).forEach((countryCode) => {
+    const baconCount = baconCounter[countryCode];
+    const regions = document.querySelectorAll(`.${countryCode}`);
+    regions.forEach((region) => {
+      region.setAttribute("data-bacon", baconCount);
+    });
+  });
+};
+
+const renderVehicle = (marker, vehicle) => {
+  marker.style.left = `${lonToX(vehicle.position.lon)}%`;
+  marker.style.top = `${latToY(vehicle.position.lat)}%`;
+  marker.style.transform = `rotate(${vehicle.bearing}deg)`;
+  if (vehicle.altitude) {
+    marker.style.fontSize = `${Math.floor(vehicle.altitude / 1.5) + 5}px`;
+  }
+};
+
+const loadPassengers = (country, number) => {
+  const baconPeople = baconCounter[country];
+  const availablePassengers = Math.min(number, baconPeople);
+  baconCounter[country] -= availablePassengers;
+  return { bacon: availablePassengers, nonBacon: 0 };
+};
+
+const createNewJourney = () => {
+  // create a journey between two random airports
+  const speed = 200; // km/tick
+  const airportsCount = airports.length;
+  const startAirportIndex = Math.floor(Math.random() * airportsCount);
+  const endAirportIndex = Math.floor(Math.random() * airportsCount);
+  const startAirport = airports[startAirportIndex];
+  const endAirport = airports[endAirportIndex];
+  const start = {
+    lat: parseFloat(startAirport.lat),
+    lon: parseFloat(startAirport.lon),
+  };
+  const end = {
+    lat: parseFloat(endAirport.lat),
+    lon: parseFloat(endAirport.lon),
+  };
+  const journey = createJourney(start, end, speed);
+  const vehicle = journey.vehicle;
+  // add vehicle to map
+  const vehicleLayer = document.getElementById("map-vehicles");
+  const vehicleMarker = document.createElement("div");
+  vehicleMarker.classList = "vehicle plane";
+  vehicle.altitude = 0;
+  vehicle.payload = loadPassengers(startAirport.iso, 100);
+  vehicle.destination = endAirport.iso;
+  renderVehicle(vehicleMarker, vehicle);
+  vehicleLayer.appendChild(vehicleMarker);
+  journey.marker = vehicleMarker;
+  return journey;
+};
+
+let journey = createNewJourney();
+const simulateJourneys = () => {
+  const vehicle = journey.tick();
+  const vehicleMarker = journey.marker;
+  renderVehicle(vehicleMarker, vehicle);
+
+  // if the vehicle has reached its destination, remove it
+  if (vehicle.distanceTravelled >= journey.path.distance) {
+    // add passengers to destination
+    const destination = vehicle.destination;
+    const passengers = vehicle.payload;
+    seed_bacon(destination, passengers.bacon);
+    vehicleMarker.remove();
+    journey = createNewJourney();
+  }
+};
 
 // start the game
 const startGame = () => {
-  setInterval(() => {
-    const baconCounter = tick();
-    // console.log(baconCounter);
-    Object.keys(baconCounter).forEach((countryCode) => {
-      const baconCount = baconCounter[countryCode];
-      // select all regions with the country code
-      const regions = document.querySelectorAll(`.${countryCode}`);
-      regions.forEach((region) => {
-        region.setAttribute("data-bacon", baconCount);
-      });
-    });
-  }, 1000);
+  setInterval(spreadSimulation, 1000);
+  setInterval(simulateJourneys, 30);
 };
 
-const initialCountry = "ZA";
-seed_bacon(initialCountry);
-seed_bacon("CA");
 startGame();
