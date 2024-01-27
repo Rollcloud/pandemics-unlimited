@@ -1,5 +1,10 @@
 import { seed_bacon, tick } from "./models/bacon.js";
-import { countries, alpha3Codes, getPopulation } from "./models/countries.js";
+import {
+  countries,
+  alpha3Codes,
+  getPopulation,
+  countryCodes,
+} from "./models/countries.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
 
@@ -60,7 +65,7 @@ const inspect = (info) => {
     <ul>
       <li>Code: ${identifier}</li>
       <li>Population: ${population.toLocaleString()}</li>
-      <li>Bacon: ${info.bacon}</li>
+      <li>Bacon: ${info.bacon}🥓</li>
     </ul>
     `;
   }
@@ -78,6 +83,7 @@ const inspect = (info) => {
   }
 };
 
+let countriesDOM = {};
 loadSvgInline("map-countries", worldMapUrl)
   .then(() => {
     // add 2-letter country class to each region
@@ -89,21 +95,28 @@ loadSvgInline("map-countries", worldMapUrl)
     });
   })
   .then(() => {
-    // when hovering over a country, show the country name, code, id, class and data-bacon
+    // add regions to countriesDOM
+    countryCodes.forEach((countryCode) => {
+      countriesDOM[countryCode] = document.querySelectorAll(
+        `#map-countries .${countryCode}`
+      );
+    });
 
-    const regions = document.querySelectorAll("#map-countries .region");
-    regions.forEach((region) => {
-      region.addEventListener("mouseover", (event) => {
-        const classes = event.target.getAttribute("class");
-        const code = extractCountryCode(classes);
-        const name = countries[code];
-        const bacon = event.target.getAttribute("data-bacon");
+    // when hovering over a country, show the country name, code, and bacon
+    Object.values(countriesDOM).forEach((regions) => {
+      regions.forEach((region) => {
+        region.addEventListener("mouseover", (event) => {
+          const classes = event.target.getAttribute("class");
+          const code = extractCountryCode(classes);
+          const name = countries[code];
+          const bacon = baconCounter[code];
 
-        inspect({
-          category: "country",
-          identifier: code,
-          name: name,
-          bacon: bacon,
+          inspect({
+            category: "country",
+            identifier: code,
+            name: name,
+            bacon: bacon,
+          });
         });
       });
     });
@@ -145,13 +158,24 @@ const plotAirports = () => {
 let baconCounter = seed_bacon("ZA");
 plotAirports();
 
-const spreadSimulation = () => {
-  baconCounter = tick();
-  Object.keys(baconCounter).forEach((countryCode) => {
-    const baconCount = baconCounter[countryCode];
-    const regions = document.querySelectorAll(`.${countryCode}`);
+const simulateBacon = () => {
+  baconCounter = tick(); // update simulation
+
+  // update bacon counter on map
+  const baconPercentage = Object.keys(baconCounter).reduce(
+    (acc, countryCode) => {
+      const population = getPopulation(countryCode);
+      const bacon = baconCounter[countryCode];
+      acc[countryCode] = Math.floor((bacon / population) * 100) || 0;
+      return acc;
+    },
+    {}
+  );
+  Object.keys(baconPercentage).forEach((countryCode) => {
+    const percentage = baconPercentage[countryCode];
+    const regions = countriesDOM[countryCode];
     regions.forEach((region) => {
-      region.setAttribute("data-bacon", baconCount);
+      region.setAttribute("data-bacon", percentage);
     });
   });
 };
@@ -222,7 +246,7 @@ const simulateJourneys = () => {
 
 // start the game
 const startGame = () => {
-  setInterval(spreadSimulation, 30);
+  setInterval(simulateBacon, 30);
   setInterval(simulateJourneys, 30);
 };
 

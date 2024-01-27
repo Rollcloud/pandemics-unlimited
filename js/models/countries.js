@@ -32,15 +32,18 @@ const fetchBorders = async () => {
 };
 
 const compileBorders = async (countryCodes) => {
-  const borders = await fetchBorders();
-  // if there are any countries without borders, add them
-  const countriesWithoutBorders = countryCodes.filter(
-    (countryCode) => !borders[countryCode]
-  );
-  countriesWithoutBorders.forEach((countryCode) => {
-    borders[countryCode] = [];
+  const bordersData = await fetchBorders();
+  const bordersCountries = {};
+  countryCodes.forEach((countryCode) => {
+    if (!bordersData[countryCode]) {
+      //  if there are any countries without borders, add them
+      bordersCountries[countryCode] = [];
+    } else {
+      bordersCountries[countryCode] = bordersData[countryCode];
+    }
   });
-  return borders;
+
+  return bordersCountries;
 };
 
 const fetchPopulationTotals = async () => {
@@ -78,10 +81,9 @@ const compilePopulations = async (countryCodes) => {
   // Create a dictionary of country codes to population totals and growth rates
   return countryCodes.reduce((acc, countryCode) => {
     const alpha3Code = isoCountries.alpha2ToAlpha3(countryCode);
-    acc[countryCode] = {
-      total: totals[alpha3Code],
-      growth: growths[alpha3Code],
-    };
+    const total = totals[alpha3Code] || 0;
+    const growth = growths[alpha3Code] || 0;
+    acc[countryCode] = { total, growth };
     return acc;
   }, {});
 };

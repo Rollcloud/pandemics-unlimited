@@ -48,6 +48,7 @@
   .region {
     stroke: #222;
     stroke-width: 2;
+    fill: #ddd;
   }
 
   .region:hover {
@@ -55,16 +56,11 @@
     stroke-width: 4;
   }
 
-  $base-color: rgb(255, 0, 0);
-
-  // data bacon is not zero
-  .region[data-bacon]:not([data-bacon="0"]) {
-    fill: $base-color;
-  }
-
-  @for $i from 0 through 16 {
+  $bacon-colour: rgb(153, 23, 23);
+  // highlight regions in shades of bacon-colour based on the value of data-bacon in steps of 5
+  @for $i from 0 through 100 {
     .region[data-bacon="#{$i}"] {
-      fill: rgb(255, 255-$i * 16, 255- $i * 16) !important;
+      fill: mix($bacon-colour, #ddd, $i * 1%);
     }
   }
 }
