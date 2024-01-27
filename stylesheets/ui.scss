@@ -1,6 +1,33 @@
 @use "cirrus";
 @use "colours";
 
+#right-bar {
+  position: fixed;
+  top: 20%;
+  right: 0;
+
+  .icons {
+    text-align: right;
+  }
+
+  .icon {
+    display: block;
+    background-color: navy;
+
+    width: 2em;
+    height: 2em;
+
+    margin-top: 0.1em;
+
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+
+    &:hover {
+      background-color: blue;
+    }
+  }
+}
+
 #dashboard {
   @extend .gradient-1;
   // stick to the bottom of the screen with fixed height

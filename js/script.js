@@ -17,6 +17,19 @@ function toTitleCase(str) {
   });
 }
 
+const showBaconBtn = document.getElementById("show-bacon-btn");
+const showSmilesBtn = document.getElementById("show-smiles-btn");
+
+showBaconBtn.addEventListener("click", (event) => {
+  const map = document.getElementById("map-countries");
+  map.classList.toggle("show-bacon");
+});
+
+showSmilesBtn.addEventListener("click", (event) => {
+  const map = document.getElementById("map-countries");
+  map.classList.toggle("show-smiles");
+});
+
 // load svg file inline, returning promise
 const loadSvgInline = (elementId, imageUrl) => {
   const element = document.getElementById(elementId);

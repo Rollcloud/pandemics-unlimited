@@ -59,7 +59,7 @@
   $bacon-colour: rgb(153, 23, 23);
   // highlight regions in shades of bacon-colour based on the value of data-bacon
   @for $i from 0 through 100 {
-    .region[data-bacon="#{$i}"] {
+    &.show-bacon .region[data-bacon="#{$i}"] {
       fill: mix($bacon-colour, #ddd, $i * 1%);
     }
   }
@@ -67,7 +67,7 @@
   $smile-colour: #f80;
   // highlight regions in shades of smile-colour based on the value of data-smile
   @for $i from 0 through 100 {
-    .region[data-smile="#{$i}"] {
+    &.show-smiles .region[data-smile="#{$i}"] {
       fill: mix($smile-colour, #ddd, $i * 1%);
     }
   }
