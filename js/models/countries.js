@@ -100,10 +100,29 @@ const getPopulation = (countryCode, date = new Date()) => {
   return populationAtDate;
 };
 
+const getPercentagePopulation = (countryCode, amounts, date = new Date()) => {
+  const amount = amounts[countryCode];
+  const population = getPopulation(countryCode, date);
+  return Math.floor((amount / population) * 100) || 0;
+};
+
+const capByPopulation = (countryCode, amount, date = new Date()) => {
+  const population = getPopulation(countryCode, date);
+  return Math.min(amount, population);
+};
+
 const alpha3Codes = isoCountries.getAlpha3Codes();
 const countries = isoCountries.getNames("en", { select: "official" });
 const countryCodes = Object.keys(countries);
 const borders = await compileBorders(countryCodes);
 const populations = await compilePopulations(countryCodes);
 
-export { borders, countries, countryCodes, alpha3Codes, getPopulation };
+export {
+  borders,
+  countries,
+  countryCodes,
+  alpha3Codes,
+  getPopulation,
+  getPercentagePopulation,
+  capByPopulation,
+};

@@ -1,6 +1,6 @@
 import { countryCodes, getPopulation } from "./countries";
 
-const spreadRate = 0.01; // per tick
+const internalSpreadRate = 0.01; // per tick
 
 // seed each country with a single smile
 const smiles = countryCodes.reduce((acc, countryCode) => {
@@ -12,7 +12,7 @@ const tick = () => {
   // each tick, the number of smiles in each country increases by the spread rate, limited by population
   Object.keys(smiles).forEach((countryCode) => {
     const population = getPopulation(countryCode);
-    const newSmiles = Math.ceil(smiles[countryCode] * (1 + spreadRate));
+    const newSmiles = Math.ceil(smiles[countryCode] * (1 + internalSpreadRate));
     smiles[countryCode] = Math.min(newSmiles, population);
   });
 

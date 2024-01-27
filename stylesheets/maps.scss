@@ -64,11 +64,19 @@
     }
   }
 
-  $smile-colour: #f80;
+  $smile-colour: #ff9500;
   // highlight regions in shades of smile-colour based on the value of data-smile
   @for $i from 0 through 100 {
     &.show-smiles .region[data-smile="#{$i}"] {
       fill: mix($smile-colour, #ddd, $i * 1%);
+    }
+  }
+
+  $sniffles-colour: #00aeef;
+  // highlight regions in shades of sniffle-colour based on the value of data-sniffles
+  @for $i from 0 through 100 {
+    &.show-sniffles .region[data-sniffles="#{$i}"] {
+      fill: mix($sniffles-colour, #ddd, $i * 1%);
     }
   }
 }

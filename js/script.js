@@ -2,12 +2,14 @@ import {
   countries,
   alpha3Codes,
   getPopulation,
+  getPercentagePopulation,
   countryCodes,
 } from "./models/countries.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
 import { seed_bacon, tick } from "./models/bacon.js";
 import { tick as tickSmiles } from "./models/smiles.js";
+import sniffles from "./models/sniffles.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
 
@@ -19,6 +21,7 @@ function toTitleCase(str) {
 
 const showBaconBtn = document.getElementById("show-bacon-btn");
 const showSmilesBtn = document.getElementById("show-smiles-btn");
+const showSnifflesBtn = document.getElementById("show-sniffles-btn");
 
 showBaconBtn.addEventListener("click", (event) => {
   const map = document.getElementById("map-countries");
@@ -28,6 +31,11 @@ showBaconBtn.addEventListener("click", (event) => {
 showSmilesBtn.addEventListener("click", (event) => {
   const map = document.getElementById("map-countries");
   map.classList.toggle("show-smiles");
+});
+
+showSnifflesBtn.addEventListener("click", (event) => {
+  const map = document.getElementById("map-countries");
+  map.classList.toggle("show-sniffles");
 });
 
 // load svg file inline, returning promise
@@ -81,6 +89,7 @@ const inspect = (info) => {
       <li>Population: ${population.toLocaleString()}👥</li>
       <li>Bacon: ${(info.bacon || 0).toLocaleString()}🥓</li>
       <li>Smiles: ${(info.smiles || 0).toLocaleString()}😊</li>
+      <li>Sniffles: ${info.sniffles.toLocaleString()}🥶</li>
     </ul>
     `;
   }
@@ -126,6 +135,7 @@ const loadMap = loadSvgInline("map-countries", worldMapUrl)
           const name = countries[code];
           const bacon = baconCounter[code];
           const smileCount = smiles[code];
+          const sniffleCount = snifflesAmounts[code];
 
           inspect({
             category: "country",
@@ -133,6 +143,7 @@ const loadMap = loadSvgInline("map-countries", worldMapUrl)
             name: name,
             bacon: bacon,
             smiles: smileCount,
+            sniffles: sniffleCount,
           });
         });
       });
@@ -181,9 +192,7 @@ const simulateBacon = () => {
   // update bacon counter on map
   const baconPercentage = Object.keys(baconCounter).reduce(
     (acc, countryCode) => {
-      const population = getPopulation(countryCode);
-      const bacon = baconCounter[countryCode];
-      acc[countryCode] = Math.floor((bacon / population) * 100) || 0;
+      acc[countryCode] = getPercentagePopulation(countryCode, baconCounter);
       return acc;
     },
     {}
@@ -203,9 +212,7 @@ const simulateSmiles = () => {
 
   // update smile counter on map
   const smilePercentage = Object.keys(smiles).reduce((acc, countryCode) => {
-    const population = getPopulation(countryCode);
-    const smile = smiles[countryCode];
-    acc[countryCode] = Math.floor((smile / population) * 100) || 0;
+    acc[countryCode] = getPercentagePopulation(countryCode, smiles);
     return acc;
   }, {});
   Object.keys(smilePercentage).forEach((countryCode) => {
@@ -213,6 +220,27 @@ const simulateSmiles = () => {
     const regions = countriesDOM[countryCode];
     regions.forEach((region) => {
       region.setAttribute("data-smile", percentage);
+    });
+  });
+};
+
+let snifflesAmounts = sniffles.seed("ZA");
+const simulateSniffles = () => {
+  snifflesAmounts = sniffles.tick(); // update simulation
+
+  // update sniffle counter on map
+  const snifflesPercentage = Object.keys(snifflesAmounts).reduce(
+    (acc, countryCode) => {
+      acc[countryCode] = getPercentagePopulation(countryCode, snifflesAmounts);
+      return acc;
+    },
+    {}
+  );
+  Object.keys(snifflesPercentage).forEach((countryCode) => {
+    const percentage = snifflesPercentage[countryCode];
+    const regions = countriesDOM[countryCode];
+    regions.forEach((region) => {
+      region.setAttribute("data-sniffles", percentage);
     });
   });
 };
@@ -286,6 +314,7 @@ const startGame = () => {
   setInterval(simulateBacon, 30);
   setInterval(simulateJourneys, 30);
   setInterval(simulateSmiles, 10);
+  setInterval(simulateSniffles, 10);
 };
 
 loadMap.then(startGame);
