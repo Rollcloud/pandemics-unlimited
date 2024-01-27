@@ -65,8 +65,8 @@ const inspect = (info) => {
     inspectorContent.innerHTML = `
     <ul>
       <li>Code: ${identifier}</li>
-      <li>Population: ${population.toLocaleString()}</li>
-      <li>Bacon: ${info.bacon}🥓</li>
+      <li>Population: ${population.toLocaleString()}👥</li>
+      <li>Bacon: ${(info.bacon || 0).toLocaleString()}🥓</li>
       <li>Smiles: ${(info.smiles || 0).toLocaleString()}😊</li>
     </ul>
     `;
@@ -86,7 +86,7 @@ const inspect = (info) => {
 };
 
 let countriesDOM = {};
-loadSvgInline("map-countries", worldMapUrl)
+const loadMap = loadSvgInline("map-countries", worldMapUrl)
   .then(() => {
     // add 2-letter country class to each region
     const regions = document.querySelectorAll("#map-countries .region");
@@ -275,4 +275,4 @@ const startGame = () => {
   setInterval(simulateSmiles, 10);
 };
 
-startGame();
+loadMap.then(startGame);
