@@ -1,10 +1,5 @@
-import {
-  countries,
-  alpha3Codes,
-  getPopulation,
-  getPercentagePopulation,
-  countryCodes,
-} from "./models/countries.js";
+import { countries, alpha3Codes, countryCodes } from "./models/countries.js";
+import populations from "./models/populations.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
 import { seed_bacon, tick } from "./models/bacon.js";
@@ -81,7 +76,7 @@ const inspect = (info) => {
   inspectorTitle.textContent = name;
 
   if (category === "country") {
-    const population = getPopulation(identifier);
+    const population = populations.getPopulation(identifier);
     inspectorIcon.classList = `fi fi-${identifier.toLowerCase()} fis`;
     inspectorContent.innerHTML = `
     <ul>
@@ -192,7 +187,10 @@ const simulateBacon = () => {
   // update bacon counter on map
   const baconPercentage = Object.keys(baconCounter).reduce(
     (acc, countryCode) => {
-      acc[countryCode] = getPercentagePopulation(countryCode, baconCounter);
+      acc[countryCode] = populations.getPercentagePopulation(
+        countryCode,
+        baconCounter
+      );
       return acc;
     },
     {}
@@ -212,7 +210,7 @@ const simulateSmiles = () => {
 
   // update smile counter on map
   const smilePercentage = Object.keys(smiles).reduce((acc, countryCode) => {
-    acc[countryCode] = getPercentagePopulation(countryCode, smiles);
+    acc[countryCode] = populations.getPercentagePopulation(countryCode, smiles);
     return acc;
   }, {});
   Object.keys(smilePercentage).forEach((countryCode) => {
@@ -231,7 +229,10 @@ const simulateSniffles = () => {
   // update sniffle counter on map
   const snifflesPercentage = Object.keys(snifflesAmounts).reduce(
     (acc, countryCode) => {
-      acc[countryCode] = getPercentagePopulation(countryCode, snifflesAmounts);
+      acc[countryCode] = populations.getPercentagePopulation(
+        countryCode,
+        snifflesAmounts
+      );
       return acc;
     },
     {}
@@ -317,4 +318,4 @@ const startGame = () => {
   setInterval(simulateSniffles, 10);
 };
 
-loadMap.then(startGame);
+loadMap.then(populations.seed).then(startGame);

@@ -1,4 +1,5 @@
-import { borders, countryCodes, getPopulation } from "./countries";
+import { borders, countryCodes } from "./countries";
+import populations from "./populations";
 
 // in a dictionary, for each country code in list of country codes, set value to 0
 const baconCounter = countryCodes.reduce((acc, countryCode) => {
@@ -37,7 +38,7 @@ const tick = () => {
   // foreach country in countriesAddBacon, if it is true, add bacon to baconCounter, limited by population
   Object.keys(countriesAddBacon).forEach((countryCode) => {
     if (countriesAddBacon[countryCode]) {
-      const population = getPopulation(countryCode);
+      const population = populations.getPopulation(countryCode);
       const newBacon = baconCounter[countryCode] + 1;
       baconCounter[countryCode] = Math.min(newBacon, population);
     }

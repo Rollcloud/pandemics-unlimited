@@ -1,10 +1,5 @@
-import {
-  borders,
-  countryCodes,
-  getPopulation,
-  getPercentagePopulation,
-  capByPopulation,
-} from "./countries";
+import { borders, countryCodes } from "./countries";
+import populations from "./populations";
 
 const meta = { name: "Sniffles", icon: "🥶", colour: "#00aeef" };
 
@@ -27,7 +22,7 @@ const seed = (countryCode, amount = 1) => {
 const spreadInternally = () => {
   // each tick, the amounts in each country increases by the spread rate, limited by population
   Object.keys(amounts).forEach((countryCode) => {
-    const population = getPopulation(countryCode);
+    const population = populations.getPopulation(countryCode);
     const newamounts = Math.ceil(
       amounts[countryCode] * (1 + internalSpreadRate)
     );
@@ -38,7 +33,10 @@ const spreadInternally = () => {
 const spreadOverBorders = () => {
   const internalPercentages = Object.keys(amounts).reduce(
     (acc, countryCode) => {
-      acc[countryCode] = getPercentagePopulation(countryCode, amounts);
+      acc[countryCode] = populations.getPercentagePopulation(
+        countryCode,
+        amounts
+      );
       return acc;
     },
     {}
@@ -63,7 +61,7 @@ const spreadOverBorders = () => {
 
   Object.keys(newSpread).forEach((countryCode) => {
     const newAmount = amounts[countryCode] + newSpread[countryCode];
-    amounts[countryCode] = capByPopulation(countryCode, newAmount);
+    amounts[countryCode] = populations.capByPopulation(countryCode, newAmount);
   });
 };
 
