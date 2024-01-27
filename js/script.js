@@ -139,7 +139,7 @@ const loadMap = loadSvgInline("map-countries", worldMapUrl)
     });
   });
 
-const lonToX = (lon) => ((lon + 180) * (100 / 360)) % 100;
+const lonToX = (lon) => ((lon + 180) * (100 / 360) + 100) % 100;
 const latToY = (lat) => ((90 - lat) * (100 / 180)) % 100;
 
 // plot all airports at their lat/lon coordinates on the map

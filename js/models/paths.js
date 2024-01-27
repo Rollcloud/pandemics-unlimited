@@ -104,11 +104,8 @@ const calcAngleDegrees = (start, end) => {
   const endLat = deg2rad(end.lat);
   const endLon = deg2rad(end.lon);
   const dLon = endLon - startLon;
-  const y = Math.sin(dLon) * Math.cos(endLat);
-  const x =
-    Math.cos(startLat) * Math.sin(endLat) -
-    Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLon);
-  const bearing = rad2deg(Math.atan2(y, x));
+  const dLat = endLat - startLat;
+  const bearing = 90 - rad2deg(Math.atan2(dLat, dLon));
   return (bearing + 360) % 360;
 };
 
