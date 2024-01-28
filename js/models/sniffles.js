@@ -4,7 +4,7 @@ import populations from "./populations";
 const meta = { name: "Sniffles", icon: "🥶", colour: "#00aeef" };
 
 const internalSpreadRate = 0.01; // per tick
-const externalSpreadRate = 0.001; // per tick
+const externalSpreadRate = 0.0001; // per tick
 const externalSpreadThreshold = 20; // internal percentage threshold for external spread
 
 // create an amounts registry for each country
