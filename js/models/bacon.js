@@ -1,6 +1,8 @@
 import { borders, countryCodes } from "./countries";
 import populations from "./populations";
 
+const meta = { name: "Bacon", icon: "🥓", colour: "991717" };
+
 // in a dictionary, for each country code in list of country codes, set value to 0
 const baconCounter = countryCodes.reduce((acc, countryCode) => {
   acc[countryCode] = 0;
@@ -47,4 +49,4 @@ const tick = () => {
   return baconCounter;
 };
 
-export { seed_bacon, tick };
+export default { meta, seed_bacon, tick };

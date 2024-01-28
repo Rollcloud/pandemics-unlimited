@@ -41,41 +41,44 @@ const fetchPopulationGrowths = async () => {
   });
 };
 
-const compilePopulations = async (countryCodes) => {
+const compilePopulations = async (countryCodes, date = new Date()) => {
   const totals = await fetchPopulationTotals();
   const growths = await fetchPopulationGrowths();
 
   // Create a dictionary of country codes to population totals and growth rates
   return countryCodes.reduce((acc, countryCode) => {
     const alpha3Code = alpha2Codes[countryCode];
-    const total = totals[alpha3Code] || 0;
-    const growth = growths[alpha3Code] || 0;
-    acc[countryCode] = { total, growth };
+    const total2022 = totals[alpha3Code] || 0;
+    const growth2022 = growths[alpha3Code] || 0;
+
+    const dailyGrowthRate = growth2022 / 365; // TODO: make this exponential, not linear
+    const daysDelta = (date - new Date("2022-01-01")) / (1000 * 60 * 60 * 24);
+    const total = Math.floor(total2022 + dailyGrowthRate * daysDelta);
+
+    acc[countryCode] = { total2022, growth2022, total };
     return acc;
   }, {});
 };
 
 // default to today's date
-const getPopulation = (countryCode, date = new Date()) => {
-  const populationAt2022 = populations[countryCode.toUpperCase()].total;
-  const annualGrowthRate = populations[countryCode.toUpperCase()].growth;
-  const dailyGrowthRate = annualGrowthRate / 365; // TODO: make this exponential, not linear
-  const daysDelta = (date - new Date("2022-01-01")) / (1000 * 60 * 60 * 24);
-  const populationAtDate = Math.floor(
-    populationAt2022 + dailyGrowthRate * daysDelta
-  );
-  return populationAtDate;
+const getPopulation = (countryCode) => {
+  const code = countryCode.toUpperCase();
+  return populations[code].total;
 };
 
-const getPercentagePopulation = (countryCode, amounts, date = new Date()) => {
+const getPercentagePopulation = (countryCode, amounts) => {
   const amount = amounts[countryCode];
-  const population = getPopulation(countryCode, date);
+  const population = getPopulation(countryCode);
   return Math.floor((amount / population) * 100) || 0;
 };
 
-const capByPopulation = (countryCode, amount, date = new Date()) => {
-  const population = getPopulation(countryCode, date);
+const capByPopulation = (countryCode, amount) => {
+  const population = getPopulation(countryCode);
   return Math.min(amount, population);
+};
+
+const migrate = (countryCode, amount) => {
+  populations[countryCode].total += amount;
 };
 
 const seed = async () => {
@@ -88,6 +91,7 @@ export default {
   meta,
   seed,
   tick,
+  migrate,
   getPopulation,
   getPercentagePopulation,
   capByPopulation,

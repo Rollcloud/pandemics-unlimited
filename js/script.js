@@ -2,7 +2,7 @@ import { countries, alpha3Codes, countryCodes } from "./models/countries.js";
 import populations from "./models/populations.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
-import { seed_bacon, tick } from "./models/bacon.js";
+import bacon from "./models/bacon.js";
 import { tick as tickSmiles } from "./models/smiles.js";
 import sniffles from "./models/sniffles.js";
 
@@ -100,6 +100,25 @@ const inspect = (info) => {
     </ul>
     `;
   }
+
+  if (category === "vehicle") {
+    if (info.vehicle_type === "plane") {
+      inspectorIcon.classList = "plane-icon";
+      inspectorContent.innerHTML = `
+      <ul>
+        <li>Passengers: ${info.passengers.totalPassengers.toLocaleString()}${
+        populations.meta.icon
+      }</li>
+        <li>Bacon: ${info.passengers.baconPeople.toLocaleString()}${
+        bacon.meta.icon
+      }</li>
+        <li>Sniffles: ${info.passengers.snifflesPeople.toLocaleString()}${
+        sniffles.meta.icon
+      }</li>
+      </ul>
+      `;
+    }
+  }
 };
 
 let countriesDOM = {};
@@ -178,11 +197,10 @@ const plotAirports = () => {
   });
 };
 
-let baconCounter = seed_bacon("ZA");
-plotAirports();
+let baconCounter = bacon.seed_bacon("ZA");
 
 const simulateBacon = () => {
-  baconCounter = tick(); // update simulation
+  baconCounter = bacon.tick(); // update simulation
 
   // update bacon counter on map
   const baconPercentage = Object.keys(baconCounter).reduce(
@@ -255,11 +273,37 @@ const renderVehicle = (marker, vehicle) => {
   }
 };
 
-const loadPassengers = (country, number) => {
-  const baconPeople = baconCounter[country];
-  const availablePassengers = Math.min(number, baconPeople);
-  baconCounter[country] -= availablePassengers;
-  return { bacon: availablePassengers, nonBacon: 0 };
+const loadPassengers = (country, totalPassengers) => {
+  const countryPopulation = populations.getPopulation(country);
+  const countryBacon = baconCounter[country];
+  const countrySniffles = snifflesAmounts[country];
+
+  const baconPercentage = countryBacon / countryPopulation;
+  const snifflesPercentage = countrySniffles / countryPopulation;
+  const baconSnifflesPercentage = baconPercentage * snifflesPercentage;
+
+  const baconPeople = Math.round(baconPercentage * totalPassengers);
+  const snifflesPeople = Math.round(snifflesPercentage * totalPassengers);
+  const baconSnifflesPeople = Math.round(
+    baconSnifflesPercentage * totalPassengers
+  );
+  const neitherPeople =
+    totalPassengers - baconPeople - snifflesPeople + baconSnifflesPeople;
+
+  // remove total passengers from country
+  populations.migrate(country, -totalPassengers);
+  // remove bacon people from countryBacon
+  bacon.seed_bacon(country, -baconPeople);
+  // remove sniffles people from snifflesAmounts
+  snifflesAmounts[country] -= snifflesPeople;
+
+  return {
+    totalPassengers,
+    baconPeople,
+    snifflesPeople,
+    baconSnifflesPeople,
+    neitherPeople,
+  };
 };
 
 const createNewJourney = () => {
@@ -288,25 +332,42 @@ const createNewJourney = () => {
   vehicle.payload = loadPassengers(startAirport.iso, 100);
   vehicle.destination = endAirport.iso;
   renderVehicle(vehicleMarker, vehicle);
+  vehicleMarker.addEventListener("mouseover", (event) => {
+    inspect({
+      category: "vehicle",
+      identifier: vehicle.id,
+      name: `Flight [${startAirport.iata} - ${endAirport.iata}]`,
+      vehicle_type: "plane",
+      origin: startAirport.iata,
+      destination: endAirport.iata,
+      passengers: vehicle.payload,
+    });
+  });
   vehicleLayer.appendChild(vehicleMarker);
   journey.marker = vehicleMarker;
   return journey;
 };
 
-let journey = createNewJourney();
+let journey;
 const simulateJourneys = () => {
+  journey = journey || createNewJourney();
   const vehicle = journey.tick();
   const vehicleMarker = journey.marker;
   renderVehicle(vehicleMarker, vehicle);
 
   // if the vehicle has reached its destination, remove it
   if (vehicle.distanceTravelled >= journey.path.distance) {
-    // add passengers to destination
     const destination = vehicle.destination;
     const passengers = vehicle.payload;
-    seed_bacon(destination, passengers.bacon);
+    // add passengers to destination
+    populations.migrate(destination, passengers.totalPassengers);
+    // add bacon people to destination
+    bacon.seed_bacon(destination, passengers.baconPeople);
+    // add sniffles people to destination
+    snifflesAmounts[destination] += passengers.snifflesPeople;
+
     vehicleMarker.remove();
-    journey = createNewJourney();
+    journey = null;
   }
 };
 
@@ -318,4 +379,4 @@ const startGame = () => {
   setInterval(simulateSniffles, 10);
 };
 
-loadMap.then(populations.seed).then(startGame);
+loadMap.then(plotAirports).then(populations.seed).then(startGame);
