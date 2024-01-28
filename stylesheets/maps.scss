@@ -1,4 +1,4 @@
-@use "cirrus";
+@use "bootstrap";
 @use "icons";
 
 #map-container {
@@ -56,7 +56,7 @@
     stroke-width: 4;
   }
 
-  $bacon-colour: rgb(153, 23, 23);
+  $bacon-colour: #991717;
   // highlight regions in shades of bacon-colour based on the value of data-bacon
   @for $i from 0 through 100 {
     &.show-bacon .region[data-bacon="#{$i}"] {
@@ -100,7 +100,7 @@
     font-size: 1.2em;
   }
   .airport:hover {
-    @extend .u-z-40;
+    @extend %z-hover;
     font-size: 1.6em;
   }
   .airport[data-size="large"]:hover {
@@ -116,6 +116,11 @@
     height: 2em;
     margin-left: -1em;
     margin-top: -1em;
+
+    &:hover {
+      @extend %z-hover;
+      font-size: 1.2em !important;
+    }
   }
 
   .plane {
