@@ -18,41 +18,65 @@ function toTitleCase(str) {
 
 // Setup model UI components
 const models = [populations, bacon, smiles, sniffles];
+const modelObjects = models.reduce((acc, model) => {
+  acc[model.meta.name] = model;
+  return acc;
+}, {});
 
 const map = document.getElementById("map-countries");
 const viewBar = document.getElementById("show-models");
-models.forEach((model) => {
+
+const showModel = (modelName) => {
+  const modelClass = `show-${modelName.toLowerCase()}`;
+
+  // remove all show-* classes
+  map.classList.forEach((className) => {
+    if (className.startsWith("show-")) {
+      map.classList.remove(className);
+    }
+  });
+  // add show-* class for the selected model
+  map.classList.add(modelClass);
+};
+
+Object.keys(modelObjects).forEach((modelName) => {
   const input_ = document.createElement("input");
   input_.type = "radio";
   input_.classList = "btn-check";
   input_.name = `model-view`;
-  input_.id = `model-view-${model.meta.name}`;
+  input_.id = `model-view-${modelName}`;
+  input_.dataset.model = modelName.toLowerCase();
 
   input_.addEventListener("click", (event) => {
-    // remove all show-* classes
-    map.classList.forEach((className) => {
-      if (className.startsWith("show-")) {
-        map.classList.remove(className);
-      }
-    });
-    // add show-* class for the selected model
-    map.classList.add(`show-${model.meta.name.toLowerCase()}`);
+    showModel(modelName);
   });
 
   // activate the first model by default
-  if (model === models[0]) {
-    map.classList.add(`show-${model.meta.name.toLowerCase()}`);
+  if (modelName === models[0].meta.name) {
+    map.classList.add(`show-${modelName.toLowerCase()}`);
     input_.checked = true;
   }
 
   const label = document.createElement("label");
   label.classList = "btn btn-secondary";
-  label.setAttribute("for", `model-view-${model.meta.name}`);
-  label.textContent = `${model.meta.icon}`;
+  label.setAttribute("for", `model-view-${modelName}`);
+  label.textContent = `${modelObjects[modelName].meta.icon}`;
   // show tooltip on hover
   label.setAttribute("data-bs-toggle", "tooltip");
   label.setAttribute("data-bs-placement", "left");
-  label.setAttribute("data-bs-title", model.meta.name);
+  label.setAttribute("data-bs-title", modelName);
+  label.setAttribute("data-model", modelName.toLowerCase());
+  // add hover event listeners
+  label.addEventListener("mouseover", (event) => {
+    const hoveredModelName = event.target.dataset.model;
+    showModel(hoveredModelName);
+  });
+  label.addEventListener("mouseout", (event) => {
+    const checkedModelName = document.querySelector(
+      'input[name="model-view"]:checked'
+    ).dataset.model;
+    showModel(checkedModelName);
+  });
 
   viewBar.appendChild(input_);
   viewBar.appendChild(label);
