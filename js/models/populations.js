@@ -85,7 +85,13 @@ const seed = async () => {
   populations = await compilePopulations(countryCodes);
 };
 
-const tick = () => {};
+const tick = () => {
+  // return dict of country codes to populations
+  return Object.keys(populations).reduce((acc, countryCode) => {
+    acc[countryCode] = getPopulation(countryCode);
+    return acc;
+  }, {});
+};
 
 export default {
   meta,

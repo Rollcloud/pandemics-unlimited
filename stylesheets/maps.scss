@@ -56,6 +56,19 @@
     stroke-width: 4;
   }
 
+  $population-colour: #3d0063;
+  // highlight regions in shades of population-colour based on the value of data-population-magnitude
+  $mag-min: 3;
+  $mag-max: 9;
+  $mag-diff: $mag-max - $mag-min;
+  $mag-step: calc(100 / $mag-diff);
+  @for $i from $mag-min through $mag-max {
+    $strength: ($i - $mag-min) * $mag-step * 1%;
+    &.show-population .region[data-population-magnitude="#{$i}"] {
+      fill: mix($population-colour, #ddd, $strength);
+    }
+  }
+
   $bacon-colour: #991717;
   // highlight regions in shades of bacon-colour based on the value of data-bacon
   @for $i from 0 through 100 {

@@ -230,6 +230,20 @@ const plotAirports = () => {
   });
 };
 
+const simulatePopulations = () => {
+  const populationsAmounts = populations.tick(); // update simulation
+
+  // update population counter on map, by country using magnitude
+  Object.keys(populationsAmounts).forEach((countryCode) => {
+    const population = populationsAmounts[countryCode];
+    const magnitude = Math.floor(Math.log10(population));
+    const regions = countriesDOM[countryCode];
+    regions.forEach((region) => {
+      region.setAttribute("data-population-magnitude", magnitude);
+    });
+  });
+};
+
 let baconCounter = bacon.seed_bacon("ZA");
 
 const simulateBacon = () => {
@@ -421,6 +435,7 @@ const removeLoadingScreen = () => {
 
 // start the game
 const startGame = () => {
+  setInterval(simulatePopulations, 60 * 1000);
   setInterval(simulateBacon, 30);
   setInterval(simulateJourneys, 30);
   setInterval(simulateSmiles, 10);
