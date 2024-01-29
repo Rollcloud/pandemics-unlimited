@@ -1,5 +1,55 @@
 @use "bootstrap";
 @use "colours";
+@use "icons";
+
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  z-index: 2000;
+
+  background-color: #222;
+  color: #ddd;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  #loading-spinner {
+    @extend .logo-icon;
+    width: 128px;
+    height: 128px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    animation: spin 3s linear infinite;
+  }
+
+  #loading-text {
+    @extend .mt-4;
+    @extend .fs-2;
+    @extend .text-center;
+    @extend .fst-italic;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  &.fade-loading {
+    @extend .fade;
+    transition: 700ms;
+  }
+}
 
 #right-bar {
   position: fixed;

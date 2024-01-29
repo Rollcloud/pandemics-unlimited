@@ -410,6 +410,15 @@ const simulateJourneys = () => {
   }
 };
 
+const removeLoadingScreen = () => {
+  const loadingScreen = document.getElementById("loading-screen");
+  // fade out loading screen, then remove from DOM
+  loadingScreen.classList.add("fade-loading");
+  setTimeout(() => {
+    loadingScreen.remove();
+  }, 1000);
+};
+
 // start the game
 const startGame = () => {
   setInterval(simulateBacon, 30);
@@ -418,4 +427,9 @@ const startGame = () => {
   setInterval(simulateSniffles, 10);
 };
 
-loadMap.then(plotAirports).then(populations.seed).then(startGame);
+loadMap
+  .then(plotAirports)
+  .then(populations.seed)
+  .then(simulatePopulations)
+  .then(removeLoadingScreen)
+  .then(startGame);
