@@ -1,9 +1,11 @@
+import bootstrap from "bootstrap/dist/js/bootstrap.min.js";
+
 import { countries, alpha3Codes, countryCodes } from "./models/countries.js";
 import populations from "./models/populations.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
 import bacon from "./models/bacon.js";
-import { tick as tickSmiles } from "./models/smiles.js";
+import smiles from "./models/smiles.js";
 import sniffles from "./models/sniffles.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
@@ -14,24 +16,55 @@ function toTitleCase(str) {
   });
 }
 
-const showBaconBtn = document.getElementById("show-bacon-btn");
-const showSmilesBtn = document.getElementById("show-smiles-btn");
-const showSnifflesBtn = document.getElementById("show-sniffles-btn");
+// Setup model UI components
+const models = [populations, bacon, smiles, sniffles];
 
-showBaconBtn.addEventListener("click", (event) => {
-  const map = document.getElementById("map-countries");
-  map.classList.toggle("show-bacon");
+const map = document.getElementById("map-countries");
+const viewBar = document.getElementById("show-models");
+models.forEach((model) => {
+  const input_ = document.createElement("input");
+  input_.type = "radio";
+  input_.classList = "btn-check";
+  input_.name = `model-view`;
+  input_.id = `model-view-${model.meta.name}`;
+
+  input_.addEventListener("click", (event) => {
+    // remove all show-* classes
+    map.classList.forEach((className) => {
+      if (className.startsWith("show-")) {
+        map.classList.remove(className);
+      }
+    });
+    // add show-* class for the selected model
+    map.classList.add(`show-${model.meta.name.toLowerCase()}`);
+  });
+
+  // activate the first model by default
+  if (model === models[0]) {
+    map.classList.add(`show-${model.meta.name.toLowerCase()}`);
+    input_.checked = true;
+  }
+
+  const label = document.createElement("label");
+  label.classList = "btn btn-secondary";
+  label.setAttribute("for", `model-view-${model.meta.name}`);
+  label.textContent = `${model.meta.icon}`;
+  // show tooltip on hover
+  label.setAttribute("data-bs-toggle", "tooltip");
+  label.setAttribute("data-bs-placement", "left");
+  label.setAttribute("data-bs-title", model.meta.name);
+
+  viewBar.appendChild(input_);
+  viewBar.appendChild(label);
 });
 
-showSmilesBtn.addEventListener("click", (event) => {
-  const map = document.getElementById("map-countries");
-  map.classList.toggle("show-smiles");
-});
-
-showSnifflesBtn.addEventListener("click", (event) => {
-  const map = document.getElementById("map-countries");
-  map.classList.toggle("show-sniffles");
-});
+// enable tooltips
+const tooltipTriggerList = document.querySelectorAll(
+  '[data-bs-toggle="tooltip"]'
+);
+const tooltipList = [...tooltipTriggerList].map(
+  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+);
 
 // load svg file inline, returning promise
 const loadSvgInline = (elementId, imageUrl) => {
@@ -148,7 +181,7 @@ const loadMap = loadSvgInline("map-countries", worldMapUrl)
           const code = extractCountryCode(classes);
           const name = countries[code];
           const bacon = baconCounter[code];
-          const smileCount = smiles[code];
+          const smileCount = smilesAmounts[code];
           const sniffleCount = snifflesAmounts[code];
 
           inspect({
@@ -222,15 +255,21 @@ const simulateBacon = () => {
   });
 };
 
-let smiles = {};
+let smilesAmounts = {};
 const simulateSmiles = () => {
-  smiles = tickSmiles(); // update simulation
+  smilesAmounts = smiles.tick(); // update simulation
 
   // update smile counter on map
-  const smilePercentage = Object.keys(smiles).reduce((acc, countryCode) => {
-    acc[countryCode] = populations.getPercentagePopulation(countryCode, smiles);
-    return acc;
-  }, {});
+  const smilePercentage = Object.keys(smilesAmounts).reduce(
+    (acc, countryCode) => {
+      acc[countryCode] = populations.getPercentagePopulation(
+        countryCode,
+        smilesAmounts
+      );
+      return acc;
+    },
+    {}
+  );
   Object.keys(smilePercentage).forEach((countryCode) => {
     const percentage = smilePercentage[countryCode];
     const regions = countriesDOM[countryCode];

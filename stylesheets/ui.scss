@@ -6,24 +6,14 @@
   top: 20%;
   right: 0;
 
-  .icons {
-    text-align: right;
-  }
+  #show-models .btn {
+    @extend .opacity-75;
 
-  .icon {
-    display: block;
-    background-color: navy;
-
-    width: 2em;
-    height: 2em;
-
-    margin-top: 0.1em;
-
-    border-top-left-radius: 50%;
-    border-bottom-left-radius: 50%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 
     &:hover {
-      background-color: blue;
+      @extend .opacity-100;
     }
   }
 }

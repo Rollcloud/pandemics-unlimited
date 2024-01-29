@@ -1,6 +1,8 @@
 import { countryCodes } from "./countries";
 import populations from "./populations";
 
+const meta = { name: "Smiles", icon: "😊", colour: "#ff9500" };
+
 const internalSpreadRate = 0.01; // per tick
 
 // seed each country with a single smile
@@ -19,4 +21,4 @@ const tick = () => {
   return smiles;
 };
 
-export { tick };
+export default { meta, tick };
