@@ -118,6 +118,9 @@ const dashboardInspector = document.getElementById("dashboard-inspector");
 const inspectorIcon = document.getElementById("inspector-icon");
 const inspectorTitle = document.getElementById("inspector-title");
 const inspectorContent = document.getElementById("inspector-content");
+const statsPercentBacon = document.getElementById("stats-percent-bacon");
+const statsPercentSmiles = document.getElementById("stats-percent-smiles");
+const statsPercentSniffles = document.getElementById("stats-percent-sniffles");
 
 const inspect = (info) => {
   // info should be an object with at least the properties:
@@ -144,6 +147,13 @@ const inspect = (info) => {
       <li>Sniffles: ${info.sniffles.toLocaleString()}🥶</li>
     </ul>
     `;
+    const percentageBacon = (info.bacon / population) * 100;
+    const percentageSmiles = (info.smiles / population) * 100;
+    const percentageSniffles = (info.sniffles / population) * 100;
+
+    statsPercentBacon.style = `--p: ${percentageBacon}`;
+    statsPercentSmiles.style = `--p: ${percentageSmiles}`;
+    statsPercentSniffles.style = `--p: ${percentageSniffles}`;
   }
 
   if (category === "airport") {
@@ -174,6 +184,14 @@ const inspect = (info) => {
       }</li>
       </ul>
       `;
+      const percentageBacon =
+        (info.passengers.baconPeople / info.passengers.totalPassengers) * 100;
+      const percentageSniffles =
+        (info.passengers.snifflesPeople / info.passengers.totalPassengers) *
+        100;
+      statsPercentBacon.style = `--p: ${percentageBacon}`;
+      statsPercentSmiles.style = `--p: 0`;
+      statsPercentSniffles.style = `--p: ${percentageSniffles}`;
     }
   }
 };
