@@ -9,6 +9,7 @@ import smiles from "./models/smiles.js";
 import sniffles from "./models/sniffles.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
+let inspectTarget = null;
 
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, function (txt) {
@@ -123,77 +124,8 @@ const statsPercentSmiles = document.getElementById("stats-percent-smiles");
 const statsPercentSniffles = document.getElementById("stats-percent-sniffles");
 
 const inspect = (info) => {
-  // info should be an object with at least the properties:
-  //   - category
-  //   - identifier
-  //   - name
-  // but may have additional properties
-
-  const category = info.category;
-  const identifier = info.identifier;
-  const name = info.name;
-
-  inspectorTitle.textContent = name;
-
-  if (category === "country") {
-    const population = populations.getPopulation(identifier);
-    inspectorIcon.classList = `fi fi-${identifier.toLowerCase()} fis`;
-    inspectorContent.innerHTML = `
-    <ul>
-      <li>Code: ${identifier}</li>
-      <li>Population: ${population.toLocaleString()}👥</li>
-      <li>Bacon: ${(info.bacon || 0).toLocaleString()}🥓</li>
-      <li>Smiles: ${(info.smiles || 0).toLocaleString()}😊</li>
-      <li>Sniffles: ${info.sniffles.toLocaleString()}🥶</li>
-    </ul>
-    `;
-    const percentageBacon = (info.bacon / population) * 100;
-    const percentageSmiles = (info.smiles / population) * 100;
-    const percentageSniffles = (info.sniffles / population) * 100;
-
-    statsPercentBacon.style = `--p: ${percentageBacon}`;
-    statsPercentSmiles.style = `--p: ${percentageSmiles}`;
-    statsPercentSniffles.style = `--p: ${percentageSniffles}`;
-  }
-
-  if (category === "airport") {
-    const country = countries[info.countryCode];
-    inspectorIcon.classList = `airport-${info.size}`;
-    inspectorContent.innerHTML = `
-    <ul>
-      <li><span class="fi fi-${info.countryCode.toLowerCase()}" ></span> ${country}</li>
-      <li>IATA: ${identifier}</li>
-      <li>Size: ${toTitleCase(info.size)}</li>
-    </ul>
-    `;
-  }
-
-  if (category === "vehicle") {
-    if (info.vehicle_type === "plane") {
-      inspectorIcon.classList = "plane-icon";
-      inspectorContent.innerHTML = `
-      <ul>
-        <li>Passengers: ${info.passengers.totalPassengers.toLocaleString()}${
-        populations.meta.icon
-      }</li>
-        <li>Bacon: ${info.passengers.baconPeople.toLocaleString()}${
-        bacon.meta.icon
-      }</li>
-        <li>Sniffles: ${info.passengers.snifflesPeople.toLocaleString()}${
-        sniffles.meta.icon
-      }</li>
-      </ul>
-      `;
-      const percentageBacon =
-        (info.passengers.baconPeople / info.passengers.totalPassengers) * 100;
-      const percentageSniffles =
-        (info.passengers.snifflesPeople / info.passengers.totalPassengers) *
-        100;
-      statsPercentBacon.style = `--p: ${percentageBacon}`;
-      statsPercentSmiles.style = `--p: 0`;
-      statsPercentSniffles.style = `--p: ${percentageSniffles}`;
-    }
-  }
+  inspectTarget = info;
+  updateInspector();
 };
 
 let countriesDOM = {};
@@ -222,17 +154,11 @@ const loadMap = loadSvgInline("map-countries", worldMapUrl)
           const classes = event.target.getAttribute("class");
           const code = extractCountryCode(classes);
           const name = countries[code];
-          const bacon = baconCounter[code];
-          const smileCount = smilesAmounts[code];
-          const sniffleCount = snifflesAmounts[code];
 
           inspect({
             category: "country",
             identifier: code,
             name: name,
-            bacon: bacon,
-            smiles: smileCount,
-            sniffles: sniffleCount,
           });
         });
       });
@@ -435,7 +361,6 @@ const createNewJourney = () => {
       vehicle_type: "plane",
       origin: startAirport.iata,
       destination: endAirport.iata,
-      passengers: vehicle.payload,
     });
   });
   vehicleLayer.appendChild(vehicleMarker);
@@ -466,6 +391,89 @@ const simulateJourneys = () => {
   }
 };
 
+const updateInspector = () => {
+  // inspectTarget should be an object with at least the properties:
+  //   - category
+  //   - identifier
+  //   - name
+  // but may have additional properties
+
+  if (!inspectTarget) return;
+
+  const category = inspectTarget.category;
+  const identifier = inspectTarget.identifier;
+  const name = inspectTarget.name;
+
+  inspectorTitle.textContent = name;
+
+  if (category === "country") {
+    const code = identifier.toUpperCase();
+    const population = populations.getPopulation(code);
+    const amountBacon = baconCounter[code] || 0;
+    const amountSmiles = smilesAmounts[code] || 0;
+    const amountSniffles = snifflesAmounts[code] || 0;
+    inspectorIcon.classList = `fi fi-${code.toLowerCase()} fis`;
+    inspectorContent.innerHTML = `
+    <ul>
+      <li>Code: ${code}</li>
+      <li>Population: ${population.toLocaleString()}👥</li>
+      <li>Bacon: ${amountBacon.toLocaleString()}🥓</li>
+      <li>Smiles: ${amountSmiles.toLocaleString()}😊</li>
+      <li>Sniffles: ${amountSniffles.toLocaleString()}🥶</li>
+    </ul>
+    `;
+    const percentageBacon = (amountBacon / population) * 100;
+    const percentageSmiles = (amountSmiles / population) * 100;
+    const percentageSniffles = (amountSniffles / population) * 100;
+
+    statsPercentBacon.style = `--p: ${percentageBacon}`;
+    statsPercentSmiles.style = `--p: ${percentageSmiles}`;
+    statsPercentSniffles.style = `--p: ${percentageSniffles}`;
+  }
+
+  if (category === "airport") {
+    const countryCode = inspectTarget.countryCode.toUpperCase();
+    const countryName = countries[countryCode];
+    const airportSize = inspectTarget.size;
+    inspectorIcon.classList = `airport-${airportSize}`;
+    inspectorContent.innerHTML = `
+    <ul>
+      <li><span class="fi fi-${countryCode.toLowerCase()}" ></span> ${countryName}</li>
+      <li>IATA: ${identifier}</li>
+      <li>Size: ${toTitleCase(airportSize)}</li>
+    </ul>
+    `;
+  }
+
+  if (category === "vehicle") {
+    if (inspectTarget.vehicle_type === "plane") {
+      inspectorIcon.classList = "plane-icon";
+
+      const payload = journey.vehicle.payload;
+      const totalPassengers = payload.totalPassengers;
+      const baconPassengers = payload.baconPeople;
+      const snifflesPassengers = payload.snifflesPeople;
+
+      inspectorContent.innerHTML = `
+      <ul>
+        <li>Passengers: ${totalPassengers.toLocaleString()}${
+        populations.meta.icon
+      }</li>
+        <li>Bacon: ${baconPassengers.toLocaleString()}${bacon.meta.icon}</li>
+        <li>Sniffles: ${snifflesPassengers.toLocaleString()}${
+        sniffles.meta.icon
+      }</li>
+      </ul>
+      `;
+      const percentageBacon = (baconPassengers / totalPassengers) * 100;
+      const percentageSniffles = (snifflesPassengers / totalPassengers) * 100;
+      statsPercentBacon.style = `--p: ${percentageBacon}`;
+      statsPercentSmiles.style = `--p: 0`;
+      statsPercentSniffles.style = `--p: ${percentageSniffles}`;
+    }
+  }
+};
+
 const removeLoadingScreen = () => {
   const loadingScreen = document.getElementById("loading-screen");
   // fade out loading screen, then remove from DOM
@@ -478,10 +486,11 @@ const removeLoadingScreen = () => {
 // start the game
 const startGame = () => {
   setInterval(simulatePopulations, 60 * 1000);
-  setInterval(simulateBacon, 30);
+  setInterval(simulateBacon, 100);
   setInterval(simulateJourneys, 30);
-  setInterval(simulateSmiles, 10);
-  setInterval(simulateSniffles, 10);
+  setInterval(simulateSmiles, 100);
+  setInterval(simulateSniffles, 100);
+  setInterval(updateInspector, 100);
 };
 
 loadMap
