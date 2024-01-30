@@ -49,4 +49,4 @@ const tick = () => {
   return baconCounter;
 };
 
-export default { meta, seed_bacon, tick };
+export default { meta, seed_bacon, tick, baconCounter };

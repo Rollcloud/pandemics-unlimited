@@ -71,4 +71,4 @@ const tick = () => {
   return amounts;
 };
 
-export default { meta, seed, tick };
+export default { meta, seed, tick, amounts };
