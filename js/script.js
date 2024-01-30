@@ -403,7 +403,7 @@ const loadPassengers = (country, totalPassengers) => {
 
 const createNewJourney = () => {
   // create a journey between two random airports
-  const speed = 200; // km/tick
+  const speed = 100; // km/tick
   const airportsCount = airports.length;
   const startAirportIndex = Math.floor(Math.random() * airportsCount);
   const endAirportIndex = Math.floor(Math.random() * airportsCount);

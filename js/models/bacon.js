@@ -1,7 +1,7 @@
 import { borders, countryCodes } from "./countries";
 import populations from "./populations";
 
-const meta = { name: "Bacon", icon: "🥓", colour: "991717" };
+const meta = { name: "Bacon", icon: "🥓", colour: "#991717" };
 
 // in a dictionary, for each country code in list of country codes, set value to 0
 const baconCounter = countryCodes.reduce((acc, countryCode) => {
@@ -41,7 +41,7 @@ const tick = () => {
   Object.keys(countriesAddBacon).forEach((countryCode) => {
     if (countriesAddBacon[countryCode]) {
       const population = populations.getPopulation(countryCode);
-      const newBacon = baconCounter[countryCode] + 1;
+      const newBacon = baconCounter[countryCode] + 1000;
       baconCounter[countryCode] = Math.min(newBacon, population);
     }
   });
