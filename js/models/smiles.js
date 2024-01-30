@@ -25,15 +25,15 @@ const tick = () => {
     const numberBacon = bacon.baconCounter[countryCode];
     const numberSniffles = sniffles.amounts[countryCode];
 
-    const percentSmiles = spreadSmiles / total;
-    const percentBacon = numberBacon / total;
-    const percentSniffles = numberSniffles / total;
+    const percentSmiles = spreadSmiles / total || 0;
+    const percentBacon = numberBacon / total || 0;
+    const percentSniffles = numberSniffles / total || 0;
 
     const percentBaconSmiles = percentBacon * percentSmiles;
     const percentSnifflesSmiles = percentSniffles * percentSmiles;
 
     const percentSmilesNew =
-      percentSmiles - percentSnifflesSmiles + percentBaconSmiles;
+      percentSmiles - 0.05 * percentSnifflesSmiles + 0.05 * percentBaconSmiles;
     const newSmiles = Math.round(percentSmilesNew * total);
 
     smiles[countryCode] = populations.capByPopulation(countryCode, newSmiles);
