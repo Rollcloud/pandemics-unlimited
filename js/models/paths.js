@@ -1,7 +1,13 @@
 const RADIUS_EARTH = 6371; // km
 
-// create path object from lat/lon coordinates 1 to lat/lon coordinates 2
-// returns the start and end lat/lon coordinates, using Great Circle formulae, returns the distance in kilometres between them and the appropriate bearing in degrees
+/**
+ * Create a path object from start to end coordinates
+ * Returns the start and end lat/lon coordinates, the Great Circle
+ * distance between them in kilometres, and the bearing in degrees
+ * @param {object} startCoordinates - the start lat/lon coordinates
+ * @param {object} endCoordinates - the end lat/lon coordinates
+ * @returns {object} - the path object
+ */
 const createPath = (startCoordinates, endCoordinates) => {
   const lat1 = startCoordinates.lat;
   const lon1 = startCoordinates.lon;
@@ -26,7 +32,12 @@ const createPath = (startCoordinates, endCoordinates) => {
   return { start, end, distance, direction };
 };
 
-// create a vehicle object that can travel along a path
+/** create a vehicle object that can travel along a path
+ * @param {object} start - the start lat/lon coordinates
+ * @param {number} bearing - the initial bearing in degrees
+ * @param {number} speed - the speed in km/h
+ * @returns {object} - the vehicle object
+ **/
 const createVehicle = (start, bearing, speed) => {
   return {
     position: start,
@@ -85,10 +96,20 @@ const moveVehicle = (vehicle, path, speed) => {
   };
 };
 
+/**
+ * Convert degrees to radians
+ * @param {number} degrees - the angle in degrees
+ * @returns {number} - the angle in radians
+ * */
 const deg2rad = (degrees) => {
   return (degrees * Math.PI) / 180;
 };
 
+/**
+ * Convert radians to degrees
+ * @param {number} radians - the angle in radians
+ * @returns {number} - the angle in degrees
+ * */
 const rad2deg = (radians) => {
   return (radians * 180) / Math.PI;
 };
@@ -105,7 +126,17 @@ const calcAngleDegrees = (start, end) => {
   return (bearing + 360) % 360;
 };
 
-// create a journey class that contains a vehicle and a path, when the journey is created, the vehicle is placed at the start of the path, the distance travelled is set to 0 km,the bearing is set to the bearing of the path. When journey.tick() is called, the vehicle is moved along the path at the given speed, and the distance travelled and vehicle position are updated.
+/**
+ * Create a journey class that contains a vehicle and a path.
+ * When the journey is created, the vehicle is placed at the start of the path,
+ * the distance travelled is set to 0 km,the bearing is set to the bearing of the path.
+ * When journey.tick() is called, the vehicle is moved along the path at the given speed,
+ * and the distance travelled and vehicle position are updated.
+ * @param {object} start - the start lat/lon coordinates
+ * @param {object} end - the end lat/lon coordinates
+ * @param {number} speed - the speed in km/h
+ * @returns {object} - the journey object
+ */
 const createJourney = (start, end, speed) => {
   const path = createPath(start, end);
   const vehicle = createVehicle(path.start, path.direction, speed);

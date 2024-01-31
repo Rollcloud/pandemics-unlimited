@@ -273,34 +273,44 @@ const renderVehicle = (marker, vehicle) => {
   }
 };
 
-const loadPassengers = (country, totalPassengers) => {
-  const countryPopulation = populations.getPopulation(country);
-  const countryBacon = baconCounter[country];
-  const countrySniffles = snifflesAmounts[country];
+/**
+ * Load passengers from the given country, up to the given capacity.
+ * @param {string} countryCode - The country to load passengers from.
+ * @param {number} capacity - The maximum number of passengers to load.
+ * @returns {object} - An object containing the number of passengers loaded.
+ * */
+const loadPassengers = (countryCode, capacity) => {
+  const countryPopulation = populations.getPopulation(countryCode);
+  // prevent more passengers leaving than population
+  const boardedPassengers = Math.min(countryPopulation, capacity);
 
-  const baconPercentage = countryBacon / countryPopulation;
-  const snifflesPercentage = countrySniffles / countryPopulation;
+  const countryBacon = baconCounter[countryCode];
+  const countrySniffles = snifflesAmounts[countryCode];
+
+  const baconPercentage = countryBacon / countryPopulation || 0;
+  const snifflesPercentage = countrySniffles / countryPopulation || 0;
   const baconSnifflesPercentage = baconPercentage * snifflesPercentage;
 
-  const baconPeople = Math.round(baconPercentage * totalPassengers);
-  const snifflesPeople = Math.round(snifflesPercentage * totalPassengers);
-  const baconSnifflesPeople = Math.round(baconSnifflesPercentage * totalPassengers);
-  const neitherPeople =
-    totalPassengers - baconPeople - snifflesPeople + baconSnifflesPeople;
+  const baconPassengers = Math.round(baconPercentage * boardedPassengers);
+  const snifflesPassengers = Math.round(snifflesPercentage * boardedPassengers);
+  const baconSnifflesPassengers = Math.round(baconSnifflesPercentage * boardedPassengers);
+  const neitherPassengers =
+    boardedPassengers - baconPassengers - snifflesPassengers + baconSnifflesPassengers;
 
-  // remove total passengers from country
-  populations.migrate(country, -totalPassengers);
-  // remove bacon people from countryBacon
-  bacon.seed_bacon(country, -baconPeople);
-  // remove sniffles people from snifflesAmounts
-  snifflesAmounts[country] -= snifflesPeople;
+  // remove boarded passengers from country
+  populations.migrate(countryCode, -boardedPassengers);
+  // remove bacon passengers from countryBacon
+  bacon.seed_bacon(countryCode, -baconPassengers);
+  // remove sniffles passengers from snifflesAmounts
+  snifflesAmounts[countryCode] -= snifflesPassengers;
 
   return {
-    totalPassengers,
-    baconPeople,
-    snifflesPeople,
-    baconSnifflesPeople,
-    neitherPeople,
+    capacity,
+    boardedPassengers,
+    baconPassengers,
+    snifflesPassengers,
+    baconSnifflesPassengers,
+    neitherPassengers,
   };
 };
 
@@ -357,11 +367,11 @@ const simulateJourneys = () => {
     const destination = vehicle.destination;
     const passengers = vehicle.payload;
     // add passengers to destination
-    populations.migrate(destination, passengers.totalPassengers);
+    populations.migrate(destination, passengers.boardedPassengers);
     // add bacon people to destination
-    bacon.seed_bacon(destination, passengers.baconPeople);
-    // add sniffles people to destination
-    snifflesAmounts[destination] += passengers.snifflesPeople;
+    bacon.seed_bacon(destination, passengers.baconPassengers);
+    // add sniffles passengers to destination
+    snifflesAmounts[destination] += passengers.snifflesPassengers;
 
     vehicleMarker.remove();
     journey = null;
@@ -427,19 +437,20 @@ const updateInspector = () => {
       inspectorIcon.classList = "plane-icon";
 
       const payload = journey.vehicle.payload;
-      const totalPassengers = payload.totalPassengers;
-      const baconPassengers = payload.baconPeople;
-      const snifflesPassengers = payload.snifflesPeople;
+      const capacity = payload.capacity;
+      const boardedPassengers = payload.boardedPassengers;
+      const baconPassengers = payload.baconPassengers;
+      const snifflesPassengers = payload.snifflesPassengers;
 
       inspectorContent.innerHTML = `
       <ul>
-        <li>Passengers: ${totalPassengers.toLocaleString()}${populations.meta.icon}</li>
+        <li>Passengers: ${boardedPassengers}/${capacity}${populations.meta.icon}</li>
         <li>Bacon: ${baconPassengers.toLocaleString()}${bacon.meta.icon}</li>
         <li>Sniffles: ${snifflesPassengers.toLocaleString()}${sniffles.meta.icon}</li>
       </ul>
       `;
-      const percentageBacon = (baconPassengers / totalPassengers) * 100;
-      const percentageSniffles = (snifflesPassengers / totalPassengers) * 100;
+      const percentageBacon = (baconPassengers / boardedPassengers) * 100;
+      const percentageSniffles = (snifflesPassengers / boardedPassengers) * 100;
       statsPercentBacon.style = `--p: ${percentageBacon}`;
       statsPercentSmiles.style = `--p: 0`;
       statsPercentSniffles.style = `--p: ${percentageSniffles}`;
