@@ -36,6 +36,14 @@
 
   Derived from total population. Population source: ( 1 ) United Nations Population Division. World Population Prospects: 2022 Revision, ( 2 ) Census reports and other statistical publications from national statistical offices, ( 3 ) Eurostat: Demographic Statistics, ( 4 ) United Nations Statistical Division. Population and Vital Statistics Reprot ( various years ), ( 5 ) U.S. Census Bureau: International Database, and ( 6 ) Secretariat of the Pacific Community: Statistics and Demography Programme.
 
+- Preventable deaths (health)
+
+  Cause of death, by communicable diseases and maternal, prenatal and nutrition conditions (% of total)
+
+  https://data.worldbank.org/indicator/SH.DTH.COMM.ZS
+
+  Derived based on the data from Global Health Estimates 2020: Deaths by Cause, Age, Sex, by Country and by Region, 2000-2019. Geneva, World Health Organization; 2020. Link: who.int/data/gho/data/themes/mortality-and-global-health-estimates/ghe-leading-causes-of-death
+
 ### Images
 
 - Planes:
