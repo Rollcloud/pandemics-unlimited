@@ -73,9 +73,8 @@ Object.keys(modelObjects).forEach((modelName) => {
     showModel(hoveredModelName);
   });
   label.addEventListener("mouseout", (event) => {
-    const checkedModelName = document.querySelector(
-      'input[name="model-view"]:checked'
-    ).dataset.model;
+    const checkedModelName = document.querySelector('input[name="model-view"]:checked')
+      .dataset.model;
     showModel(checkedModelName);
   });
 
@@ -84,9 +83,7 @@ Object.keys(modelObjects).forEach((modelName) => {
 });
 
 // enable tooltips
-const tooltipTriggerList = document.querySelectorAll(
-  '[data-bs-toggle="tooltip"]'
-);
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
 const tooltipList = [...tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
 );
@@ -218,16 +215,10 @@ const simulateBacon = () => {
   baconCounter = bacon.tick(); // update simulation
 
   // update bacon counter on map
-  const baconPercentage = Object.keys(baconCounter).reduce(
-    (acc, countryCode) => {
-      acc[countryCode] = populations.getPercentagePopulation(
-        countryCode,
-        baconCounter
-      );
-      return acc;
-    },
-    {}
-  );
+  const baconPercentage = Object.keys(baconCounter).reduce((acc, countryCode) => {
+    acc[countryCode] = populations.getPercentagePopulation(countryCode, baconCounter);
+    return acc;
+  }, {});
   Object.keys(baconPercentage).forEach((countryCode) => {
     const percentage = baconPercentage[countryCode];
     const regions = countriesDOM[countryCode];
@@ -242,16 +233,10 @@ const simulateSmiles = () => {
   smilesAmounts = smiles.tick(); // update simulation
 
   // update smile counter on map
-  const smilePercentage = Object.keys(smilesAmounts).reduce(
-    (acc, countryCode) => {
-      acc[countryCode] = populations.getPercentagePopulation(
-        countryCode,
-        smilesAmounts
-      );
-      return acc;
-    },
-    {}
-  );
+  const smilePercentage = Object.keys(smilesAmounts).reduce((acc, countryCode) => {
+    acc[countryCode] = populations.getPercentagePopulation(countryCode, smilesAmounts);
+    return acc;
+  }, {});
   Object.keys(smilePercentage).forEach((countryCode) => {
     const percentage = smilePercentage[countryCode];
     const regions = countriesDOM[countryCode];
@@ -266,16 +251,10 @@ const simulateSniffles = () => {
   snifflesAmounts = sniffles.tick(); // update simulation
 
   // update sniffle counter on map
-  const snifflesPercentage = Object.keys(snifflesAmounts).reduce(
-    (acc, countryCode) => {
-      acc[countryCode] = populations.getPercentagePopulation(
-        countryCode,
-        snifflesAmounts
-      );
-      return acc;
-    },
-    {}
-  );
+  const snifflesPercentage = Object.keys(snifflesAmounts).reduce((acc, countryCode) => {
+    acc[countryCode] = populations.getPercentagePopulation(countryCode, snifflesAmounts);
+    return acc;
+  }, {});
   Object.keys(snifflesPercentage).forEach((countryCode) => {
     const percentage = snifflesPercentage[countryCode];
     const regions = countriesDOM[countryCode];
@@ -305,9 +284,7 @@ const loadPassengers = (country, totalPassengers) => {
 
   const baconPeople = Math.round(baconPercentage * totalPassengers);
   const snifflesPeople = Math.round(snifflesPercentage * totalPassengers);
-  const baconSnifflesPeople = Math.round(
-    baconSnifflesPercentage * totalPassengers
-  );
+  const baconSnifflesPeople = Math.round(baconSnifflesPercentage * totalPassengers);
   const neitherPeople =
     totalPassengers - baconPeople - snifflesPeople + baconSnifflesPeople;
 
@@ -456,13 +433,9 @@ const updateInspector = () => {
 
       inspectorContent.innerHTML = `
       <ul>
-        <li>Passengers: ${totalPassengers.toLocaleString()}${
-        populations.meta.icon
-      }</li>
+        <li>Passengers: ${totalPassengers.toLocaleString()}${populations.meta.icon}</li>
         <li>Bacon: ${baconPassengers.toLocaleString()}${bacon.meta.icon}</li>
-        <li>Sniffles: ${snifflesPassengers.toLocaleString()}${
-        sniffles.meta.icon
-      }</li>
+        <li>Sniffles: ${snifflesPassengers.toLocaleString()}${sniffles.meta.icon}</li>
       </ul>
       `;
       const percentageBacon = (baconPassengers / totalPassengers) * 100;

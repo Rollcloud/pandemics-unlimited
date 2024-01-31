@@ -15,8 +15,7 @@ const amounts = countryCodes.reduce((acc, countryCode) => {
   return acc;
 }, {});
 
-const preventableDeathsFilename =
-  "API_SH.DTH.COMM.ZS_DS2_en_csv_v2_6300689.csv";
+const preventableDeathsFilename = "API_SH.DTH.COMM.ZS_DS2_en_csv_v2_6300689.csv";
 
 // increase amounts in the given country
 const seed = async (countryCode, amount = 1) => {
@@ -64,21 +63,13 @@ const spreadInternally = () => {
 };
 
 const spreadOverBorders = () => {
-  const internalPercentages = Object.keys(amounts).reduce(
-    (acc, countryCode) => {
-      acc[countryCode] = populations.getPercentagePopulation(
-        countryCode,
-        amounts
-      );
-      return acc;
-    },
-    {}
-  );
-  const countriesWithExternalSpread = Object.keys(amounts).filter(
-    (countryCode) => {
-      return internalPercentages[countryCode] > externalSpreadThreshold;
-    }
-  );
+  const internalPercentages = Object.keys(amounts).reduce((acc, countryCode) => {
+    acc[countryCode] = populations.getPercentagePopulation(countryCode, amounts);
+    return acc;
+  }, {});
+  const countriesWithExternalSpread = Object.keys(amounts).filter((countryCode) => {
+    return internalPercentages[countryCode] > externalSpreadThreshold;
+  });
   const newSpread = {};
   countriesWithExternalSpread.forEach((countryCode) => {
     const spreadAmount = Math.ceil(amounts[countryCode] * externalSpreadRate);

@@ -9,6 +9,7 @@
   "license": "MIT",
   "author": "Rollcloud",
   "scripts": {
+    "format": "prettier . --write",
     "test": "jest",
     "start": "webpack serve --open --config webpack.config.dev.js",
     "build": "webpack --config webpack.config.prod.js"

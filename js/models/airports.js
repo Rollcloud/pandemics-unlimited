@@ -46,8 +46,7 @@ const get_airports = () => {
   );
   // filter all_airports to remove airports without an iso code
   all_airports = all_airports.filter(
-    (airport) =>
-      airport.iso !== "" && airport.iso !== null && airport.iso !== undefined
+    (airport) => airport.iso !== "" && airport.iso !== null && airport.iso !== undefined
   );
 
   const airports = continents.reduce((acc, continent) => {

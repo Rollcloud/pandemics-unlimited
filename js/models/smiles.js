@@ -16,9 +16,7 @@ const smiles = countryCodes.reduce((acc, countryCode) => {
 const tick = () => {
   // each tick, the number of smiles in each country increases by the spread rate, limited by population
   Object.keys(smiles).forEach((countryCode) => {
-    const spreadSmiles = Math.ceil(
-      smiles[countryCode] * (1 + internalSpreadRate)
-    );
+    const spreadSmiles = Math.ceil(smiles[countryCode] * (1 + internalSpreadRate));
 
     // create interplay with sniffles and bacon - sniffles reduce smiles, bacon increase smiles
     const total = populations.getPopulation(countryCode);
