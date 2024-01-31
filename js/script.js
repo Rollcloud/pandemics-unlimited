@@ -471,7 +471,7 @@ const seedModels = () => {
   return Promise.all([
     apples.init(countriesDOM),
     bacon.seed_bacon("ZA"),
-    sniffles.seed("ZA").then((data) => {
+    sniffles.seed("CD").then((data) => {
       snifflesAmounts = data;
     }),
   ]);

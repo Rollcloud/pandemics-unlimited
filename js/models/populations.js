@@ -57,6 +57,10 @@ const capByPopulation = (countryCode, amount) => {
 };
 
 const migrate = (countryCode, amount) => {
+  if (!populations[countryCode]) {
+    console.log(`Country code ${countryCode} not found in populations`);
+    return;
+  }
   populations[countryCode].total += amount;
 };
 

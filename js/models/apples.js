@@ -51,7 +51,7 @@ const produceApples = () => {
   // convert annual production in tonnes to daily production in apples
   const applesPerTonne = 7000;
   const daysPerYear = 365;
-  const daysPerTick = 0.000001;
+  const daysPerTick = 0.00001;
   Object.keys(annualProduction).forEach((countryCode) => {
     const newApples = Math.ceil(
       ((annualProduction[countryCode] * applesPerTonne) / daysPerYear) * daysPerTick

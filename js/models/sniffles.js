@@ -1,14 +1,13 @@
 import { borders, countryCodes } from "./countries";
 import populations from "./populations";
 import prophylaxis from "../views/prophylaxis";
+import apples from "./apples";
 
 const meta = { name: "Sniffles", icon: "🥶", colour: "#00aeef" };
 
 const baseInternalSpreadRate = 0.01; // per tick
 const externalSpreadRate = 0.0001; // per tick
 const externalSpreadThreshold = 20; // internal percentage threshold for external spread
-
-let prophylaxisValues;
 
 // create an amounts registry for each country
 const amounts = countryCodes.reduce((acc, countryCode) => {
@@ -23,14 +22,20 @@ const seed = async (countryCode, amount = 1) => {
 };
 
 const spreadInternally = () => {
-  // each tick, the amounts in each country increases by the spread rate, limited by population
+  // each tick, the amounts in each country increases by the spread rate, decreases with apples limited by population
   Object.keys(amounts).forEach((countryCode) => {
     const population = populations.getPopulation(countryCode);
-    const newamounts = Math.ceil(
+    let potentialSniffles = Math.ceil(
       amounts[countryCode] *
         (1 + baseInternalSpreadRate / prophylaxis.getCountryValue(countryCode))
     );
-    amounts[countryCode] = Math.min(newamounts, population);
+    potentialSniffles = Math.min(potentialSniffles, population);
+    // an apple a day keeps the sniffles away
+    const availableApples = apples.getCountryValue(countryCode);
+    const eatenApples = Math.min(availableApples, potentialSniffles);
+    potentialSniffles -= eatenApples;
+    apples.delta(countryCode, -eatenApples);
+    amounts[countryCode] = potentialSniffles;
   });
 };
 
