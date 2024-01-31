@@ -77,6 +77,14 @@
     }
   }
 
+  $apples-colour: #6bc714;
+  // highlight regions in shades of apples-colour based on the value of data-apples
+  @for $i from 5 through 18 {
+    &.show-apples .region[data-apples="#{$i}"] {
+      fill: mix($apples-colour, #ddd, ($i - 5) * 7.5%);
+    }
+  }
+
   $bacon-colour: #991717;
   // highlight regions in shades of bacon-colour based on the value of data-bacon
   @for $i from 0 through 100 {

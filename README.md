@@ -44,6 +44,14 @@
 
   Derived based on the data from Global Health Estimates 2020: Deaths by Cause, Age, Sex, by Country and by Region, 2000-2019. Geneva, World Health Organization; 2020. Link: who.int/data/gho/data/themes/mortality-and-global-health-estimates/ghe-leading-causes-of-death
 
+- Apple Production
+
+  https://ourworldindata.org/grapher/apple-production
+
+  Data source: Food and Agriculture Organization of the United Nations – Learn more about this data
+
+  OurWorldInData.org/agricultural-production
+
 ### Images
 
 - Planes:

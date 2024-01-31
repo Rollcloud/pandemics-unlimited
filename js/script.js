@@ -4,6 +4,7 @@ import { countries, alpha3Codes, countryCodes } from "./models/countries.js";
 import populations from "./models/populations.js";
 import { airports } from "./models/airports.js";
 import { createJourney } from "./models/paths.js";
+import apples from "./models/apples.js";
 import bacon from "./models/bacon.js";
 import smiles from "./models/smiles.js";
 import sniffles from "./models/sniffles.js";
@@ -19,7 +20,7 @@ function toTitleCase(str) {
 }
 
 // Setup model UI components
-const models = [populations, prophylaxis, bacon, smiles, sniffles];
+const models = [populations, prophylaxis, apples, bacon, smiles, sniffles];
 const modelObjects = models.reduce((acc, model) => {
   acc[model.meta.name] = model;
   return acc;
@@ -199,6 +200,10 @@ const plotAirports = () => {
 const simulatePopulations = () => {
   populations.tick();
   populations.render(countriesDOM);
+};
+
+const simulateApples = () => {
+  apples.tick(); // update simulation
 };
 
 let baconCounter = bacon.seed_bacon("ZA");
@@ -388,6 +393,7 @@ const updateInspector = () => {
     const code = identifier.toUpperCase();
     const population = populations.getPopulation(code);
     const prophylaxisValue = prophylaxis.getCountryValue(code);
+    const numberApples = apples.getCountryValue(code);
     const amountBacon = baconCounter[code] || 0;
     const amountSmiles = smilesAmounts[code] || 0;
     const amountSniffles = snifflesAmounts[code] || 0;
@@ -397,6 +403,7 @@ const updateInspector = () => {
       <li>Code: ${code}</li>
       <li>Population: ${population.toLocaleString()}👥</li>
       <li>Prophylaxis: ${prophylaxisValue.toFixed(2)}${prophylaxis.meta.icon}</li>
+      <li>Apples: ${numberApples.toLocaleString()}${apples.meta.icon}</li>
       <li>Bacon: ${amountBacon.toLocaleString()}🥓</li>
       <li>Smiles: ${amountSmiles.toLocaleString()}😊</li>
       <li>Sniffles: ${amountSniffles.toLocaleString()}🥶</li>
@@ -462,6 +469,7 @@ let snifflesAmounts;
 
 const seedModels = () => {
   return Promise.all([
+    apples.init(countriesDOM),
     bacon.seed_bacon("ZA"),
     sniffles.seed("ZA").then((data) => {
       snifflesAmounts = data;
@@ -481,6 +489,7 @@ const removeLoadingScreen = () => {
 // start the game
 const startGame = () => {
   setInterval(simulatePopulations, 60 * 1000);
+  setInterval(simulateApples, 100);
   setInterval(simulateBacon, 100);
   setInterval(simulateJourneys, 30);
   setInterval(simulateSmiles, 100);
