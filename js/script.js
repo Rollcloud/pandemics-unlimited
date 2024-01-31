@@ -7,6 +7,7 @@ import { createJourney } from "./models/paths.js";
 import bacon from "./models/bacon.js";
 import smiles from "./models/smiles.js";
 import sniffles from "./models/sniffles.js";
+import prophylaxis from "./views/prophylaxis.js";
 
 const worldMapUrl = "data/Worldmap_location_NED_50m.svg";
 let inspectTarget = null;
@@ -18,7 +19,7 @@ function toTitleCase(str) {
 }
 
 // Setup model UI components
-const models = [populations, bacon, smiles, sniffles];
+const models = [populations, prophylaxis, bacon, smiles, sniffles];
 const modelObjects = models.reduce((acc, model) => {
   acc[model.meta.name] = model;
   return acc;
@@ -196,17 +197,8 @@ const plotAirports = () => {
 };
 
 const simulatePopulations = () => {
-  const populationsAmounts = populations.tick(); // update simulation
-
-  // update population counter on map, by country using magnitude
-  Object.keys(populationsAmounts).forEach((countryCode) => {
-    const population = populationsAmounts[countryCode];
-    const magnitude = Math.floor(Math.log10(population));
-    const regions = countriesDOM[countryCode];
-    regions.forEach((region) => {
-      region.setAttribute("data-population-magnitude", magnitude);
-    });
-  });
+  populations.tick();
+  populations.render(countriesDOM);
 };
 
 let baconCounter = bacon.seed_bacon("ZA");
@@ -246,7 +238,6 @@ const simulateSmiles = () => {
   });
 };
 
-let snifflesAmounts = sniffles.seed("ZA");
 const simulateSniffles = () => {
   snifflesAmounts = sniffles.tick(); // update simulation
 
@@ -396,6 +387,7 @@ const updateInspector = () => {
   if (category === "country") {
     const code = identifier.toUpperCase();
     const population = populations.getPopulation(code);
+    const prophylaxisValue = prophylaxis.getCountryValue(code);
     const amountBacon = baconCounter[code] || 0;
     const amountSmiles = smilesAmounts[code] || 0;
     const amountSniffles = snifflesAmounts[code] || 0;
@@ -404,6 +396,7 @@ const updateInspector = () => {
     <ul>
       <li>Code: ${code}</li>
       <li>Population: ${population.toLocaleString()}👥</li>
+      <li>Prophylaxis: ${prophylaxisValue.toFixed(2)}${prophylaxis.meta.icon}</li>
       <li>Bacon: ${amountBacon.toLocaleString()}🥓</li>
       <li>Smiles: ${amountSmiles.toLocaleString()}😊</li>
       <li>Sniffles: ${amountSniffles.toLocaleString()}🥶</li>
@@ -458,6 +451,24 @@ const updateInspector = () => {
   }
 };
 
+const initViews = () => {
+  return Promise.all([
+    populations.init(countriesDOM),
+    prophylaxis.init(countriesDOM),
+  ]).then(simulatePopulations);
+};
+
+let snifflesAmounts;
+
+const seedModels = () => {
+  return Promise.all([
+    bacon.seed_bacon("ZA"),
+    sniffles.seed("ZA").then((data) => {
+      snifflesAmounts = data;
+    }),
+  ]);
+};
+
 const removeLoadingScreen = () => {
   const loadingScreen = document.getElementById("loading-screen");
   // fade out loading screen, then remove from DOM
@@ -479,7 +490,7 @@ const startGame = () => {
 
 loadMap
   .then(plotAirports)
-  .then(populations.seed)
-  .then(simulatePopulations)
+  .then(initViews)
+  .then(seedModels)
   .then(removeLoadingScreen)
   .then(startGame);

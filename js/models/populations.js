@@ -1,9 +1,10 @@
 import Papa from "papaparse";
 import { alpha2Codes, countryCodes } from "./countries";
+import worldBankLoader from "../loaders/world-bank";
 
 const meta = { name: "Population", icon: "👥", colour: "#3d0063" };
-const popTotalsCsvPath = "data/API_SP.POP.TOTL_DS2_en_csv_v2_6508519.csv";
-const popGrowthCsvPath = "data/API_SP.POP.GROW_DS2_en_csv_v2_6298705.csv";
+const popTotalsFilename = "API_SP.POP.TOTL_DS2_en_csv_v2_6508519.csv";
+const popGrowthFilename = "API_SP.POP.GROW_DS2_en_csv_v2_6298705.csv";
 
 let populations = {};
 
@@ -13,43 +14,22 @@ Papa.parsePromise = function (file, config = {}) {
   });
 };
 
-const fetchPopulationTotals = async () => {
-  return Papa.parsePromise(popTotalsCsvPath, {
-    download: true,
-    comments: "//",
-    header: true,
-  }).then(function (results) {
-    // Convert to a dictionary of country codes to population totals for 2022
-    return results.data.reduce((acc, row) => {
-      acc[row["Country Code"]] = parseInt(row["2022"]);
-      return acc;
-    }, {});
-  });
-};
-
-const fetchPopulationGrowths = async () => {
-  return Papa.parsePromise(popGrowthCsvPath, {
-    download: true,
-    comments: "//",
-    header: true,
-  }).then(function (results) {
-    // Convert to a dictionary of country codes to population growths for 2022
-    return results.data.reduce((acc, row) => {
-      acc[row["Country Code"]] = parseFloat(row["2022"]);
-      return acc;
-    }, {});
-  });
-};
-
 const compilePopulations = async (countryCodes, date = new Date()) => {
-  const totals = await fetchPopulationTotals();
-  const growths = await fetchPopulationGrowths();
+  const totals = await worldBankLoader.loadDataForCountriesByYear(
+    popTotalsFilename,
+    countryCodes,
+    2022
+  );
+  const growths = await worldBankLoader.loadDataForCountriesByYear(
+    popGrowthFilename,
+    countryCodes,
+    2022
+  );
 
   // Create a dictionary of country codes to population totals and growth rates
   return countryCodes.reduce((acc, countryCode) => {
-    const alpha3Code = alpha2Codes[countryCode];
-    const total2022 = totals[alpha3Code] || 0;
-    const growth2022 = growths[alpha3Code] || 0;
+    const total2022 = totals[countryCode] || 0;
+    const growth2022 = growths[countryCode] || 0;
 
     const dailyGrowthRate = growth2022 / 365; // TODO: make this exponential, not linear
     const daysDelta = (date - new Date("2022-01-01")) / (1000 * 60 * 60 * 24);
@@ -60,7 +40,6 @@ const compilePopulations = async (countryCodes, date = new Date()) => {
   }, {});
 };
 
-// default to today's date
 const getPopulation = (countryCode) => {
   const code = countryCode.toUpperCase();
   return populations[code].total;
@@ -81,8 +60,21 @@ const migrate = (countryCode, amount) => {
   populations[countryCode].total += amount;
 };
 
-const seed = async () => {
+const render = (countriesDOM) => {
+  // update population counter on map, by country using magnitude
+  Object.keys(populations).forEach((countryCode) => {
+    const population = populations[countryCode].total;
+    const magnitude = Math.floor(Math.log10(population));
+    const regions = countriesDOM[countryCode];
+    regions.forEach((region) => {
+      region.setAttribute("data-population-magnitude", magnitude);
+    });
+  });
+};
+
+const init = async (countriesDOM) => {
   populations = await compilePopulations(countryCodes);
+  render(countriesDOM);
 };
 
 const tick = () => {
@@ -95,8 +87,9 @@ const tick = () => {
 
 export default {
   meta,
-  seed,
+  init,
   tick,
+  render,
   migrate,
   getPopulation,
   getPercentagePopulation,

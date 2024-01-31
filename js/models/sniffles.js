@@ -1,13 +1,14 @@
 import { borders, countryCodes } from "./countries";
 import populations from "./populations";
-import worldBankLoader from "../loaders/world-bank";
+import prophylaxis from "../views/prophylaxis";
 
 const meta = { name: "Sniffles", icon: "🥶", colour: "#00aeef" };
 
 const baseInternalSpreadRate = 0.01; // per tick
 const externalSpreadRate = 0.0001; // per tick
 const externalSpreadThreshold = 20; // internal percentage threshold for external spread
-let preventableDeathsRate;
+
+let prophylaxisValues;
 
 // create an amounts registry for each country
 const amounts = countryCodes.reduce((acc, countryCode) => {
@@ -15,38 +16,9 @@ const amounts = countryCodes.reduce((acc, countryCode) => {
   return acc;
 }, {});
 
-const preventableDeathsFilename = "API_SH.DTH.COMM.ZS_DS2_en_csv_v2_6300689.csv";
-
 // increase amounts in the given country
 const seed = async (countryCode, amount = 1) => {
   amounts[countryCode] += amount;
-
-  // load health data
-  preventableDeathsRate = await worldBankLoader
-    .loadDataForCountriesByYear(preventableDeathsFilename, countryCodes, 2019)
-    .then((data) => {
-      // find the highest rate and substitute NaNs with this value
-      const maxRate = Object.values(data).reduce((acc, rate) => {
-        if (isNaN(rate)) return acc;
-        return Math.max(acc, rate);
-      }, 0);
-
-      return Object.keys(data).reduce((acc, countryCode) => {
-        if (isNaN(data[countryCode])) acc[countryCode] = maxRate;
-        else acc[countryCode] = data[countryCode];
-        return acc;
-      }, {});
-    })
-    .then((data) => {
-      // normalise the rates to the baseInternalSpreadRate equal to the median rate
-      // median preventable death rate is 10
-      const medianRate = 10;
-      return Object.keys(data).reduce((acc, countryCode) => {
-        acc[countryCode] = data[countryCode] / medianRate;
-        return acc;
-      }, {});
-    });
-
   return amounts;
 };
 
@@ -56,7 +28,7 @@ const spreadInternally = () => {
     const population = populations.getPopulation(countryCode);
     const newamounts = Math.ceil(
       amounts[countryCode] *
-        (1 + baseInternalSpreadRate * preventableDeathsRate[countryCode])
+        (1 + baseInternalSpreadRate / prophylaxis.getCountryValue(countryCode))
     );
     amounts[countryCode] = Math.min(newamounts, population);
   });

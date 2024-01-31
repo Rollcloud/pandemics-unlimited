@@ -69,6 +69,14 @@
     }
   }
 
+  $prophylaxis-colour: #008080;
+  // highlight regions in shades of prophylaxis-colour based on the value of data-prophylaxis
+  @for $i from -100 through 100 {
+    &.show-prophylaxis .region[data-prophylaxis="#{$i}"] {
+      fill: mix($prophylaxis-colour, #ddd, ($i + 100) * 0.5%);
+    }
+  }
+
   $bacon-colour: #991717;
   // highlight regions in shades of bacon-colour based on the value of data-bacon
   @for $i from 0 through 100 {
